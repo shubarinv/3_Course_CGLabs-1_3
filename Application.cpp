@@ -5,11 +5,27 @@
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <sstream>
+#define ASSERT(X) \
+  if (!(X)) __builtin_debugtrap()
+#define glCall(x)  \
+  glClearErrors(); \
+  x;               \
+  ASSERT(glLogCall(#x, __FILE__, __LINE__))
 
 struct ShaderProgramSource {
   std::string vertexShader;
   std::string fragmentShader;
 };
+static void glClearErrors() {
+  while (glGetError() != GL_NO_ERROR)
+	;
+}
+static bool glLogCall(const char *function, const char *file, int line) {
+  while (GLenum error = glGetError()) {
+	spdlog::error("OpenGL error: {} in file {} in function {} at line {}", gluErrorString(error), file, function, line);
+  }
+  return true;
+}
 static ShaderProgramSource ParseShader(const std::string &filepath) {
   spdlog::info("Parsing shader at: {}", filepath.c_str());
   std::ifstream stream(filepath);
@@ -122,42 +138,41 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   unsigned int indices[] = {
 	  0, 1, 2,
 	  2, 3, 0};
-
   unsigned int buffer;
   GLuint vertexArrayID;
-  glGenVertexArrays(1, &vertexArrayID);
-  glBindVertexArray(vertexArrayID);
-  glGenBuffers(1, &buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
+  glCall(glGenVertexArrays(1, &vertexArrayID));
+  glCall(glBindVertexArray(vertexArrayID));
+  glCall(glGenBuffers(1, &buffer));
+  glCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+  glCall(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *)nullptr);
-  glEnableVertexAttribArray(0);
+  glCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *)nullptr));
+  glCall(glEnableVertexAttribArray(0));
 
   unsigned int ibo;//Index buffer object
-  glGenBuffers(1, &ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+  glCall(glGenBuffers(1, &ibo));
+  glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+  glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
 
   ShaderProgramSource source = ParseShader("../resources/shaders/basic.glsl");
 
   unsigned int shader = createShader(source.vertexShader, source.fragmentShader);
-  glUseProgram(shader);
+  glCall(glUseProgram(shader));
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
 	/* Render here */
-	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
+	glCall(glClear(GL_COLOR_BUFFER_BIT));
+	glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 	/* Swap front and back buffers */
 	glfwSwapBuffers(window);
 
 	/* Poll for and process events */
 	glfwPollEvents();
   }
-  glDeleteProgram(shader);
+  glCall(glDeleteProgram(shader));
   glfwTerminate();
+  spdlog::info("Program finished");
   return 0;
 }
