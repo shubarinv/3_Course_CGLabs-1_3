@@ -11,7 +11,7 @@ int main() {
 	spdlog::critical("Application::Failed to init GLFW");
 	throw std::runtime_error("Failed to init GLFW");
   }
-
+  spdlog::debug("GLFW Init - OK");
   /* Create a windowed mode window and its OpenGL context */
   window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
   if (!window) {
@@ -19,6 +19,7 @@ int main() {
 	spdlog::critical("Application::Failed to create window");
 	throw std::runtime_error("Failed to create window");
   }
+  spdlog::debug("Window created successfully");
 
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
