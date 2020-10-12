@@ -14,9 +14,11 @@ class VertexArray {
  public:
   VertexArray() {
 	glCall(glGenVertexArrays(1, &rendererID));
+	spdlog::info("VertexArray created rendererID: {}", rendererID);
   }
   ~VertexArray() {
 	glCall(glDeleteVertexArrays(1, &rendererID));
+	spdlog::info("VertexArray destroyed rendererID: {}", rendererID);
   }
   void bind() const {
 	glCall(glBindVertexArray(rendererID));

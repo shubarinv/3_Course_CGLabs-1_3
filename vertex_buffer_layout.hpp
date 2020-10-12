@@ -10,7 +10,6 @@
 struct VertexBufferElement {
   unsigned int type;
   unsigned int length;
-
   unsigned char normalized;
 
   static unsigned int getSize(unsigned int type) {
@@ -20,7 +19,6 @@ struct VertexBufferElement {
 	  case GL_UNSIGNED_BYTE: return 1;
 	  default: return -1;
 	}
-	return 0;
   }
 };
 class VertexBufferLayout {

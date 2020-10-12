@@ -15,9 +15,11 @@ class VertexBuffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
+	spdlog::info("VertexBuffer created rendererID: {}", rendererID);
   }
   ~VertexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
+	spdlog::info("VertexBuffer destroyed rendererID: {}", rendererID);
   }
   void bind() const {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));

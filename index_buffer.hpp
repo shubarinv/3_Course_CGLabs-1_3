@@ -21,9 +21,11 @@ class IndexBuffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _length * sizeof(unsigned int), data, GL_STATIC_DRAW));
+	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
   ~IndexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
+	spdlog::info("IndexBuffer destroyed rendererID: {}", rendererID);
   }
   void bind() const {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
