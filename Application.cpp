@@ -2,30 +2,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "buffer_layout.hpp"
+#include "index_buffer.hpp"
+#include "vertex_array.hpp"
+#include "vertex_buffer.hpp"
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <sstream>
-#define ASSERT(X) \
-  if (!(X)) __builtin_debugtrap()
-#define glCall(x)  \
-  glClearErrors(); \
-  x;               \
-  ASSERT(glLogCall(#x, __FILE__, __LINE__))
-
 struct ShaderProgramSource {
-  std::string vertexShader;
-  std::string fragmentShader;
+  std::string vertexShader{};
+  std::string fragmentShader{};
 };
-static void glClearErrors() {
-  while (glGetError() != GL_NO_ERROR)
-	;
-}
-static bool glLogCall(const char *function, const char *file, int line) {
-  while (GLenum error = glGetError()) {
-	spdlog::error("OpenGL error: {} in file {} in function {} at line {}", gluErrorString(error), file, function, line);
-  }
-  return true;
-}
 static ShaderProgramSource ParseShader(const std::string &filepath) {
   spdlog::info("Parsing shader at: {}", filepath.c_str());
   std::ifstream stream(filepath);
@@ -139,15 +126,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  0, 1, 2,
 	  2, 3, 0};
   unsigned int buffer;
-  GLuint vertexArrayID;
-  glCall(glGenVertexArrays(1, &vertexArrayID));
-  glCall(glBindVertexArray(vertexArrayID));
-  glCall(glGenBuffers(1, &buffer));
-  glCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-  glCall(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+  GLuint vao;
+  glCall(glGenVertexArrays(1, &vao));
+  glCall(glBindVertexArray(vao));
+
+  VertexArray vertexArray;
+  VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
+  vertexArray.AddBuffer(vertexBuffer);
+  BufferLayout layout;
+  layout.push<float>(3);
+  vertexArray.addLayout(layout);
 
   glCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *)nullptr));
   glCall(glEnableVertexAttribArray(0));
+  IndexBuffer index_buffer(indices, 6);
 
   unsigned int ibo;//Index buffer object
   glCall(glGenBuffers(1, &ibo));
@@ -172,9 +164,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	glCall(glClear(GL_COLOR_BUFFER_BIT));
 
 	glCall(glUniform4f(location, r, 0.4f, 0.7f, 1.0f));
+	index_buffer.bind();
 	glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-	glCall(glUniform4f(location, 0.3f, r, 0.7f, 1.0f));
-	glCall(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr));
 	if (r > 1.0f)
 	  increment = -0.05f;
 	else if (r < 0.0f)
