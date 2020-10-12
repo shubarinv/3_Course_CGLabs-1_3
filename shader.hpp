@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 class Shader {
   struct ShaderProgramSource {
 	std::string vertexShader{};
@@ -20,9 +21,11 @@ class Shader {
 	filepath = _filepath;
 	source = parseShader();
 	rendererID = createShader();
+	spdlog::info("Created shader with id: {}", rendererID);
   }
   ~Shader() {
 	glCall(glDeleteProgram(rendererID));
+	spdlog::info("destroyed shader with id: {}", rendererID);
   }
   [[maybe_unused]] void bind() const {
 	glCall(glUseProgram(rendererID));
@@ -36,11 +39,17 @@ class Shader {
 
  private:
   ShaderProgramSource source;
-  [[nodiscard]] int getUniformLocation(const std::string &name) const {
+  std::unordered_map<std::string, int> uniformLocationCache;
+  [[nodiscard]] int getUniformLocation(const std::string &name) {
+	if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
+	  return uniformLocationCache[name];
+	}
 	glCall(int location = glGetUniformLocation(rendererID, "u_Color"));
 	if (location == -1) {
 	  spdlog::warn("Uniform with name {} does not exist", name);
 	}
+
+	uniformLocationCache[name] = location;
 	return location;
   }
   unsigned int rendererID{};
