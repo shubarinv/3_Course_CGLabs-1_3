@@ -7,6 +7,7 @@
 #include "renderer.hpp"
 class Vertex {
   glm::vec3 position{};
+
  public:
   [[maybe_unused]] [[nodiscard]] const glm::vec3 &getPosition() const {
 	return position;
@@ -18,31 +19,27 @@ class Vertex {
 	setPosition(_pos);
 	setColor(_color);
   }
+
  private:
   glm::vec3 color{};
   void setPosition(glm::vec3 _newPosition) {
-	if (_newPosition.x < -1 || _newPosition.x > 1 ||
-		_newPosition.y < -1 || _newPosition.y > 1 ||
-		_newPosition.z < -1 || _newPosition.z > 1) {
+	if (_newPosition.x < -1 || _newPosition.x > 1 || _newPosition.y < -1 || _newPosition.y > 1 || _newPosition.z < -1 || _newPosition.z > 1) {
 	  spdlog::error("Invalid location!");
 	  throw std::runtime_error("Invalid location for vertex");
 	}
 	position = _newPosition;
   }
   void setColor(glm::vec3 _color) {
-	if (_color.x < -1 || _color.x > 1 ||
-		_color.y < -1 || _color.y > 1 ||
-		_color.z < -1 || _color.z > 1) {
+	if (_color.x < -1 || _color.x > 1 || _color.y < -1 || _color.y > 1 || _color.z < -1 || _color.z > 1) {
 	  spdlog::error("Invalid color!");
 	}
 	color = _color;
   }
   bool operator==(const Vertex &b) const {
-	if (position.x == b.position.x &&
-		position.y == b.position.y &&
-		position.z == b.position.z) {
+	if (position.x == b.position.x && position.y == b.position.y && position.z == b.position.z) {
 	  return true;
-	} else return false;
+	} else
+	  return false;
   }
 };
 

@@ -5,8 +5,9 @@
 #ifndef CGLABS__VERTEX_BUFFER_LAYOUT_HPP_
 #define CGLABS__VERTEX_BUFFER_LAYOUT_HPP_
 
-#include "renderer.hpp"
 #include <vector>
+
+#include "renderer.hpp"
 struct VertexBufferElement {
   unsigned int type;
   unsigned int length;

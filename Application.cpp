@@ -1,13 +1,13 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <spdlog/spdlog.h>
 
 #include "index_buffer.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
-#include <spdlog/spdlog.h>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
@@ -53,7 +53,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   VertexArray vertexArray;
   VertexBuffer vertexBuffer(vertices);
   VertexBufferLayout layout;
-  layout.push<float>(3);
+  layout.push<float>(3);///< number of params for each vertex
   vertexArray.addBuffer(vertexBuffer, layout);
 
   IndexBuffer index_buffer(indices, 6);

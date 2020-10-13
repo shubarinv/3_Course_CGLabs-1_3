@@ -14,10 +14,10 @@
 #define GL_SILENCE_DEPRECATION
 #include <GL/glew.h>
 #include <OpenGL/opengl.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
 bool glLogCall(const char *function, const char *file, int line) {

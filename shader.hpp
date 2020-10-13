@@ -5,11 +5,12 @@
 #ifndef CGLABS__SHADER_HPP_
 #define CGLABS__SHADER_HPP_
 
-#include "renderer.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+
+#include "renderer.hpp"
 class Shader {
   struct ShaderProgramSource {
 	std::string vertexShader{};
@@ -18,8 +19,8 @@ class Shader {
 
  public:
   explicit Shader(const std::string &_filepath) {
-	filepath = _filepath;
-	source = parseShader();
+	filepath   = _filepath;
+	source     = parseShader();
 	rendererID = createShader();
 	spdlog::info("Created shader with id: {}", rendererID);
   }
@@ -60,8 +61,8 @@ class Shader {
 	std::string line;
 	std::stringstream ss[2];
 	enum class shaderType {
-	  NONE = -1,
-	  VERTEX = 0,
+	  NONE     = -1,
+	  VERTEX   = 0,
 	  FRAGMENT = 1
 	};
 	shaderType type = shaderType::NONE;
