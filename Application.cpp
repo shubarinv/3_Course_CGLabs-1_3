@@ -6,9 +6,7 @@
 #include "shader.hpp"
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
-#include <fstream>
 #include <spdlog/spdlog.h>
-#include <sstream>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
@@ -56,7 +54,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   unsigned int indices[] = {
 	  0, 1, 2,
 	  2, 3, 0};
-  unsigned int buffer;
 
   VertexArray vertexArray;
   VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
