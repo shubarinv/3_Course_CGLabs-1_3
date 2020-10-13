@@ -5,7 +5,7 @@
 #ifndef CGLABS__INDEX_BUFFER_HPP_
 #define CGLABS__INDEX_BUFFER_HPP_
 
-#include "renderer.hpp"
+#include "lib.hpp"
 class IndexBuffer {
  private:
   unsigned int rendererID{};
@@ -21,6 +21,7 @@ class IndexBuffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _length * sizeof(unsigned int), data, GL_STATIC_DRAW));
+	length = _length;
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
   ~IndexBuffer() {
