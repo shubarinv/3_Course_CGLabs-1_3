@@ -4,6 +4,7 @@
 
 #include "index_buffer.hpp"
 #include "shader.hpp"
+#include "vertex.hpp"
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
 #include <spdlog/spdlog.h>
@@ -40,7 +41,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   }
   spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
   spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
-
   float positions[] = {
 	  -0.5f,
 	  -0.5f,
@@ -51,14 +51,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  -0.5f,
 	  0.5f,
   };
+  std::vector<Vertex> vertices{
+	  Vertex({-0.5f, -0.5f, 0}),
+	  Vertex({0.5f, -0.5f, 0}),
+	  Vertex({0.5f, 0.5f, 0}),
+	  Vertex({-0.5f, 0.5f, 0})};
   unsigned int indices[] = {
 	  0, 1, 2,
 	  2, 3, 0};
 
   VertexArray vertexArray;
-  VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
+  VertexBuffer vertexBuffer(vertices);
   VertexBufferLayout layout;
-  layout.push<float>(2);
+  layout.push<float>(3);
   vertexArray.addBuffer(vertexBuffer, layout);
 
   IndexBuffer index_buffer(indices, 6);
