@@ -4,7 +4,6 @@
 
 #ifndef CGLABS__VERTEX_HPP_
 #define CGLABS__VERTEX_HPP_
-#include "renderer.hpp"
 class Vertex {
   glm::vec3 position{};
 

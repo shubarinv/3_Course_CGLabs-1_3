@@ -5,7 +5,8 @@
 #ifndef CGLABS__VERTEX_BUFFER_HPP_
 #define CGLABS__VERTEX_BUFFER_HPP_
 
-#include "renderer.hpp"
+#include "lib.hpp"
+#include "vertex.hpp"
 class VertexBuffer {
  private:
   unsigned int rendererID{};

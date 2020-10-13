@@ -4,34 +4,25 @@
 
 #ifndef CGLABS__RENDERER_HPP_
 #define CGLABS__RENDERER_HPP_
-#define ASSERT(X) \
-  if (!(X)) __builtin_debugtrap()
-#define glCall(x)  \
-  glClearErrors(); \
-  x;               \
-  ASSERT(glLogCall(#x, __FILE__, __LINE__))
 
-#define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
-#include <OpenGL/opengl.h>
-#include <spdlog/spdlog.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
-bool glLogCall(const char *function, const char *file, int line) {
-  while (GLenum error = glGetError()) {
-	spdlog::error("OpenGL error: {} in file {} in function {} at line {}", gluErrorString(error), file, function, line);
-  }
-  return true;
-}
+#include "index_buffer.hpp"
+#include "shader.hpp"
+#include "vertex_array.hpp"
 
-void glClearErrors() {
-  while (glGetError() != GL_NO_ERROR)
-	;
-}
 class Renderer {
+ public:
+  static void draw(VertexArray *vertexArray, IndexBuffer *indexBuffer, Shader *shader) {
+	shader->bind();
+	vertexArray->bind();
+	indexBuffer->bind();
+	glCall(glDrawElements(GL_TRIANGLES, indexBuffer->getLength(), GL_UNSIGNED_INT, nullptr));
+  }
+  static void clear(glm::vec4 clearColor = {0, 0, 0, 0}) {
+	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
 };
 
 #endif//CGLABS__RENDERER_HPP_

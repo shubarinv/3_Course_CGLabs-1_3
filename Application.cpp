@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 
 #include "index_buffer.hpp"
+#include "renderer.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
 #include "vertex_array.hpp"
@@ -59,21 +60,18 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   IndexBuffer index_buffer(indices, 6);
 
   Shader shader("../resources/shaders/basic.glsl");
-  shader.bind();
+
   shader.setUniform4f("u_Color", {0.3f, 0.4f, 0.7f, 1.0f});
 
-  float r = 0.0f;
+  float r         = 0.0f;
   float increment = 0.05f;
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
-	/* Render here */
 
-	glCall(glClear(GL_COLOR_BUFFER_BIT));
+	Renderer::clear();
+	shader.bind();
 	shader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
-	vertexArray.bind();
-	index_buffer.bind();
-	glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-
+	Renderer::draw(&vertexArray, &index_buffer, &shader);
 	if (r > 1.0f)
 	  increment = -0.05f;
 	else if (r < 0.0f)

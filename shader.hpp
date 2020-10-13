@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "renderer.hpp"
 class Shader {
   struct ShaderProgramSource {
 	std::string vertexShader{};

@@ -5,6 +5,7 @@
 #ifndef CGLABS__VERTEX_ARRAY_HPP_
 #define CGLABS__VERTEX_ARRAY_HPP_
 
+#include "lib.hpp"
 #include "vertex_buffer.hpp"
 #include "vertex_buffer_layout.hpp"
 class VertexArray {
