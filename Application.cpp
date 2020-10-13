@@ -41,16 +41,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   }
   spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
   spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
-  float positions[] = {
-	  -0.5f,
-	  -0.5f,
-	  0.5f,
-	  -0.5f,
-	  0.5f,
-	  0.5f,
-	  -0.5f,
-	  0.5f,
-  };
   std::vector<Vertex> vertices{
 	  Vertex({-0.5f, -0.5f, 0}),
 	  Vertex({0.5f, -0.5f, 0}),
