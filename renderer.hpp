@@ -13,11 +13,11 @@
 
 class Renderer {
  public:
-  static void draw(VertexArray *vertexArray, IndexBuffer *indexBuffer, Shader *shader) {
+  static void draw(VertexArray *vertexArray, IndexBuffer *indexBuffer, Shader *shader, GLuint mode = GL_TRIANGLES) {
 	shader->bind();
 	vertexArray->bind();
 	indexBuffer->bind();
-	glCall(glDrawElements(GL_TRIANGLES, indexBuffer->getLength(), GL_UNSIGNED_INT, nullptr));
+	glCall(glDrawElements(mode, indexBuffer->getLength(), GL_UNSIGNED_INT, nullptr));
   }
   static void clear(glm::vec4 clearColor = {0, 0, 0, 0}) {
 	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
