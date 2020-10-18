@@ -1,6 +1,4 @@
 #define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
 #include "index_buffer.hpp"
@@ -9,55 +7,22 @@
 #include "vertex.hpp"
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
+#include "window.hpp"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
-  GLFWwindow *window;
-  /* Initialize the library */
-  if (!glfwInit()) {
-	spdlog::critical("Application::Failed to init GLFW");
-	throw std::runtime_error("Failed to init GLFW");
-  }
-  glfwWindowHint(GLFW_SAMPLES, 4);              // 4x antialiasing
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// We want OpenGL 4.1
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
-  spdlog::debug("GLFW Init - OK");
-  /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
-  if (!window) {
-	glfwTerminate();
-	spdlog::critical("Application::Failed to create window");
-	throw std::runtime_error("Failed to create window");
-  }
-  spdlog::debug("Window created successfully");
-
-  /* Make the window's context current */
-  glfwMakeContextCurrent(window);
-  GLenum err = glewInit();
-  if (GLEW_OK != err) {
-	/* Problem: glewInit failed, something is seriously wrong. */
-	spdlog::critical("Application::GLEW init failed: {}", glewGetErrorString(err));
-  }
-  spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
-  spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
-  std::vector<Vertex> vertices{
-	  Vertex({-0.5f, -0.5f, 0}),
-	  Vertex({0.5f, -0.5f, 0}),
-	  Vertex({0.5f, 0.5f, 0}),
-	  Vertex({-0.5f, 0.5f, 0})};
-  unsigned int indices[] = {
-	  0, 1, 2,
-	  2, 3, 0};
+  Window window({640, 480});
 
   VertexArray vertexArray;
-  VertexBuffer vertexBuffer(vertices);
+  VertexBuffer vertexBuffer({Vertex({-0.5f, -0.5f, 0}),
+							 Vertex({0.5f, -0.5f, 0}),
+							 Vertex({0.5f, 0.5f, 0}),
+							 Vertex({-0.5f, 0.5f, 0})});
   VertexBufferLayout layout;
   layout.push<float>(3);///< number of params for each vertex
   vertexArray.addBuffer(vertexBuffer, layout);
 
-  IndexBuffer index_buffer(indices, 6);
+  IndexBuffer index_buffer({0, 1, 2, 2, 3, 0});
 
   Shader shader("../resources/shaders/basic.glsl");
 
@@ -66,7 +31,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   float r         = 0.0f;
   float increment = 0.05f;
   /* Loop until the user closes the window */
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window.getWindow())) {
 
 	Renderer::clear();
 	shader.bind();
@@ -78,12 +43,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  increment = 0.05f;
 	r += increment;
 	/* Swap front and back buffers */
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(window.getWindow());
 
 	/* Poll for and process events */
 	glfwPollEvents();
   }
-  glfwTerminate();
+  window.destroy();
   spdlog::info("Program finished");
   return 0;
 }
