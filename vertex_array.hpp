@@ -37,9 +37,8 @@ class VertexArray {
 	bind();
 	buffer.bind();
 	const auto &elements = layout.getElements();
-	for (unsigned int i = 0; i < elements.size(); i++) {
-	  const auto &element = elements[i];
-	  glCall(glVertexAttribPointer(i, element.length, element.type, element.normalized,
+	for (auto element : elements) {
+	  glCall(glVertexAttribPointer(vertexAttribIndex, element.length, element.type, element.normalized,
 								   layout.getStride(), (const void *)offset));
 	  offset += element.length * VertexBufferElement::getSize(element.type);
 	}
