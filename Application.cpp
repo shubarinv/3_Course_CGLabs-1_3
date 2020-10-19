@@ -57,7 +57,8 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
   Window window({640, 640});
-
+  Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
+  Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
   VertexArray vertexArray;
   VertexArray vertexArrayPoints;
   VertexBuffer vertexBuffer({
@@ -83,7 +84,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   layout.push<float>(3);      ///< number of params for each vertex
   layoutPoints.push<float>(3);///< number of params for each vertex
   vertexArray.addBuffer(vertexBuffer, layout);
-  vertexArrayPoints.addBuffer(vbPoints, layout);
+  vertexArrayPoints.addBuffer(vbPoints, layoutPoints);
   vertexArrayPoints.addBuffer(colorBuffer, layoutPoints, 1);
   IndexBuffer index_buffer0({0, 1, 2, 3, 2, 4, 4, 2, 5, 5, 2, 6, 6, 2, 7, 7, 2, 0});
   IndexBuffer index_buffer1({0, 2, 4, 4, 6, 0, 1, 3, 5, 5, 7, 1, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 0});
@@ -100,8 +101,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	tmp.emplace_back(i);
   }
   IndexBuffer index_buffer10(tmp);
-  Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
-  Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
 
   float r         = 0.0f;
   float increment = 0.05f;
