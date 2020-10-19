@@ -30,6 +30,12 @@ class ColorBuffer : public Buffer {
 	glCall(glDeleteBuffers(1, &rendererID));
 	spdlog::info("ColorBuffer destroyed rendererID: {}", rendererID);
   }
+  void bind() const override {
+	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
+  }
+  static void unbind() {
+	glCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+  }
 };
 
 #endif//CGLABS__COLOR_BUFFER_HPP_

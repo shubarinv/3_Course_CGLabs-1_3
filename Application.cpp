@@ -12,6 +12,18 @@
 #include "vertex_buffer.hpp"
 #include "window.hpp"
 
+template<typename Numeric, typename Generator = std::mt19937>
+Numeric random(Numeric from, Numeric to) {
+  thread_local static Generator gen(std::random_device{}());
+
+  using dist_type = typename std::conditional<
+	  std::is_integral<Numeric>::value, std::uniform_int_distribution<Numeric>, std::uniform_real_distribution<Numeric> >::type;
+
+  thread_local static dist_type dist;
+
+  return dist(gen, typename dist_type::param_type{from, to});
+}
+
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
@@ -41,17 +53,6 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
 	spdlog::info("selected_optionX is now {}", selected_optionX);
   }
 }
-template<typename Numeric, typename Generator = std::mt19937>
-Numeric random(Numeric from, Numeric to) {
-  thread_local static Generator gen(std::random_device{}());
-
-  using dist_type = typename std::conditional<
-	  std::is_integral<Numeric>::value, std::uniform_int_distribution<Numeric>, std::uniform_real_distribution<Numeric> >::type;
-
-  thread_local static dist_type dist;
-
-  return dist(gen, typename dist_type::param_type{from, to});
-}
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
@@ -77,13 +78,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   VertexBuffer vbPoints(points);
   VertexBufferLayout layout;
   VertexBufferLayout layoutPoints;
-  //ColorBuffer colorBuffer(points);
+  ColorBuffer colorBuffer(points);
 
   layout.push<float>(3);      ///< number of params for each vertex
   layoutPoints.push<float>(3);///< number of params for each vertex
   vertexArray.addBuffer(vertexBuffer, layout);
   vertexArrayPoints.addBuffer(vbPoints, layout);
-  // vertexArrayPoints.addBuffer(colorBuffer, layoutPoints,0);
+  vertexArrayPoints.addBuffer(colorBuffer, layoutPoints, 1);
   IndexBuffer index_buffer0({0, 1, 2, 3, 2, 4, 4, 2, 5, 5, 2, 6, 6, 2, 7, 7, 2, 0});
   IndexBuffer index_buffer1({0, 2, 4, 4, 6, 0, 1, 3, 5, 5, 7, 1, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 0});
   IndexBuffer index_buffer2({0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 0});
@@ -99,8 +100,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	tmp.emplace_back(i);
   }
   IndexBuffer index_buffer10(tmp);
-
-  Shader shader("../resources/shaders/basic.glsl");
+  Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
+  Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
 
   float r         = 0.0f;
   float increment = 0.05f;
@@ -109,45 +110,45 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
 	Renderer::clear();
-	shader.bind();
-	shader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
+	uShader.bind();
+	uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
 	vertexArray.bind();
 	switch (selected_optionX) {
-
 	  case 0:
-		Renderer::draw(&vertexArray, &index_buffer0, &shader);
+		Renderer::draw(&vertexArray, &index_buffer0, &uShader);
 		break;
 	  case 1:
-		Renderer::draw(&vertexArray, &index_buffer1, &shader);
+		Renderer::draw(&vertexArray, &index_buffer1, &uShader);
 		break;
 	  case 2:
-		Renderer::draw(&vertexArray, &index_buffer2, &shader, GL_LINES);
+		Renderer::draw(&vertexArray, &index_buffer2, &uShader, GL_LINES);
 		break;
 	  case 3:
-		Renderer::draw(&vertexArray, &index_buffer3, &shader);
+		Renderer::draw(&vertexArray, &index_buffer3, &uShader);
 		break;
 	  case 4:
-		Renderer::draw(&vertexArray, &index_buffer4, &shader);
+		Renderer::draw(&vertexArray, &index_buffer4, &uShader);
 		break;
 	  case 5:
-		Renderer::draw(&vertexArray, &index_buffer5, &shader);
+		Renderer::draw(&vertexArray, &index_buffer5, &uShader);
 		break;
 	  case 6:
-		Renderer::draw(&vertexArray, &index_buffer6, &shader);
+		Renderer::draw(&vertexArray, &index_buffer6, &uShader);
 		break;
 	  case 7:
-		Renderer::draw(&vertexArray, &index_buffer7, &shader);
+		Renderer::draw(&vertexArray, &index_buffer7, &uShader);
 		break;
 	  case 8:
-		Renderer::draw(&vertexArray, &index_buffer8, &shader);
+		Renderer::draw(&vertexArray, &index_buffer8, &uShader);
 		break;
 	  case 9:
-		Renderer::draw(&vertexArray, &index_buffer9, &shader);
+		Renderer::draw(&vertexArray, &index_buffer9, &uShader);
 		break;
 	  case 10:
+		lShader.bind();
 		vertexArrayPoints.bind();
 		glPointSize(4);
-		Renderer::draw(&vertexArrayPoints, &index_buffer10, &shader, GL_POINTS);
+		Renderer::draw(&vertexArrayPoints, &index_buffer10, &lShader, GL_POINTS, false);
 		break;
 	  default:
 		break;

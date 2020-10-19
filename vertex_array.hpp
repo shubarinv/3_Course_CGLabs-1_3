@@ -11,6 +11,12 @@
 class VertexArray {
  private:
   unsigned int rendererID{};
+  unsigned int offset{0};
+
+ public:
+  [[nodiscard]] unsigned int getOffset() const {
+	return offset;
+  }
 
  public:
   VertexArray() {
@@ -27,18 +33,17 @@ class VertexArray {
   [[maybe_unused]] static void unbind() {
 	glCall(glBindVertexArray(0));
   }
-  void addBuffer(const Buffer &buffer, const VertexBufferLayout &layout) const {
+  void addBuffer(const Buffer &buffer, const VertexBufferLayout &layout, int vertexAttribIndex = 0) {
 	bind();
 	buffer.bind();
 	const auto &elements = layout.getElements();
-	unsigned int offset  = 0;
 	for (unsigned int i = 0; i < elements.size(); i++) {
 	  const auto &element = elements[i];
 	  glCall(glVertexAttribPointer(i, element.length, element.type, element.normalized,
 								   layout.getStride(), (const void *)offset));
 	  offset += element.length * VertexBufferElement::getSize(element.type);
-	  glCall(glEnableVertexAttribArray(0));
 	}
+	glCall(glEnableVertexAttribArray(vertexAttribIndex));
   }
 
   [[maybe_unused]] void addLayout(VertexBufferElement layout) {
