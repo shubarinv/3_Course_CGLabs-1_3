@@ -24,24 +24,24 @@ class VertexArray {
   void bind() const {
 	glCall(glBindVertexArray(rendererID));
   }
-  static void unbind() {
+  [[maybe_unused]] static void unbind() {
 	glCall(glBindVertexArray(0));
   }
-  void addBuffer(const VertexBuffer &buffer, const VertexBufferLayout &layout) const {
+  void addBuffer(const Buffer &buffer, const VertexBufferLayout &layout) const {
 	bind();
 	buffer.bind();
 	const auto &elements = layout.getElements();
 	unsigned int offset  = 0;
 	for (unsigned int i = 0; i < elements.size(); i++) {
 	  const auto &element = elements[i];
-	  glCall(glEnableVertexAttribArray(i));
 	  glCall(glVertexAttribPointer(i, element.length, element.type, element.normalized,
 								   layout.getStride(), (const void *)offset));
 	  offset += element.length * VertexBufferElement::getSize(element.type);
 	  glCall(glEnableVertexAttribArray(0));
 	}
   }
-  void addLayout(VertexBufferElement layout) {
+
+  [[maybe_unused]] void addLayout(VertexBufferElement layout) {
   }
 };
 

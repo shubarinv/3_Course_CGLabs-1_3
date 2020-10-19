@@ -5,10 +5,10 @@
 #ifndef CGLABS__INDEX_BUFFER_HPP_
 #define CGLABS__INDEX_BUFFER_HPP_
 
+#include "buffer.hpp"
 #include "lib.hpp"
-class IndexBuffer {
+class IndexBuffer : public Buffer {
  private:
-  unsigned int rendererID{};
   unsigned int length{};
 
  public:
@@ -28,10 +28,10 @@ class IndexBuffer {
 	glCall(glDeleteBuffers(1, &rendererID));
 	spdlog::info("IndexBuffer destroyed rendererID: {}", rendererID);
   }
-  void bind() const {
+  void bind() const override {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
   }
-  static void unbind() {
+  [[maybe_unused]] static void unbind() {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
   }
 };
