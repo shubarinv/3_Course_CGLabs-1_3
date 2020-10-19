@@ -33,7 +33,7 @@ class ColorBuffer : public Buffer {
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
   }
-  static void unbind() {
+  [[maybe_unused]] static void unbind() {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
   }
 };

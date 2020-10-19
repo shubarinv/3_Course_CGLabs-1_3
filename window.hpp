@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <utility>
+
 #include "lib.hpp"
 
 class Window {
@@ -19,7 +21,7 @@ class Window {
 	glfwTerminate();
   }
   [[maybe_unused]] bool getShouldClose() {
-	glfwWindowShouldClose(glWindow);
+	return glfwWindowShouldClose(glWindow);
   }
 
   explicit Window(glm::vec2 size, std::string _title = "UNSET ") {
@@ -28,7 +30,7 @@ class Window {
 	  spdlog::critical("Application::Failed to init GLFW");
 	  throw std::runtime_error("Failed to init GLFW");
 	}
-	title = _title;
+	title = std::move(_title);
 	glfwWindowHint(GLFW_SAMPLES, 4);              // 4x antialiasing
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// We want OpenGL 4.1
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);

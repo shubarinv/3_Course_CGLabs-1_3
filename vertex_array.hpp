@@ -14,11 +14,6 @@ class VertexArray {
   unsigned int offset{0};
 
  public:
-  [[nodiscard]] unsigned int getOffset() const {
-	return offset;
-  }
-
- public:
   VertexArray() {
 	glCall(glGenVertexArrays(1, &rendererID));
 	spdlog::info("VertexArray created rendererID: {}", rendererID);

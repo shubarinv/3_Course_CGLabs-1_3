@@ -72,9 +72,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  Vertex({0.6f, 0.6f, 0}),
   });
   std::vector<Vertex> points;
-  points.reserve(4);
-  for (int i = 0; i < 4; ++i) {
-	points.emplace_back(Vertex({random<double>(-1, 1), random<double>(-1, 1), 0}, true, {random<double>(0, 1), random<double>(0, 1), random<double>(0, 1)}));
+  points.reserve(100);
+  for (int i = 0; i < 100; ++i) {
+	points.emplace_back(Vertex({random<double>(-0.99, 0.99), random<double>(-0.99, 0.99), 0}, true, {random<double>(0, 1), random<double>(0, 1), random<double>(0, 1)}));
   }
   VertexBuffer vbPoints(points);
   VertexBufferLayout layout;
@@ -147,7 +147,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		lShader.bind();
 		vertexArrayPoints.bind();
 		glPointSize(4);
-		Renderer::draw(&vertexArrayPoints, &index_buffer10, &lShader, GL_POINTS, false);
+		Renderer::draw(&vertexArrayPoints, &index_buffer10, &lShader, GL_POINTS);
 		break;
 	  default:
 		break;

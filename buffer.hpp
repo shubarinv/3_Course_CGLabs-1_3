@@ -10,7 +10,7 @@ class Buffer {
 
  public:
   unsigned int rendererID{};
-  virtual void virtual bind() const {
+  virtual void bind() const {
 	glCall(glBindVertexArray(rendererID));
   }
   [[maybe_unused]] static void unbind() {

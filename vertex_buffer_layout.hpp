@@ -33,7 +33,7 @@ class VertexBufferLayout {
 	return stride;
   }
   template<typename T>
-  void push(unsigned int length) {
+  void push([[maybe_unused]] unsigned int length) {
   }
   template<>
   void push<float>(unsigned int length) {

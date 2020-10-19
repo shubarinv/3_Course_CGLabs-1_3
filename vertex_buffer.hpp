@@ -23,7 +23,7 @@ class VertexBuffer : public Buffer {
 	spdlog::info("VertexBuffer(Vertex) created rendererID: {}", rendererID);
   }
 
-  VertexBuffer(const void *data, unsigned int size) {
+  [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
@@ -37,7 +37,7 @@ class VertexBuffer : public Buffer {
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
   }
-  static void unbind() {
+  [[maybe_unused]] static void unbind() {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
   }
 };

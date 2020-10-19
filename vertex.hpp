@@ -9,7 +9,7 @@ class Vertex {
   bool front = true;
 
  public:
-  [[nodiscard]] bool isFront() const {
+  [[maybe_unused]] [[nodiscard]] bool isFront() const {
 	return front;
   }
 
