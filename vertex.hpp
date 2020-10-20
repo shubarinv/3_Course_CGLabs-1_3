@@ -20,10 +20,9 @@ class Vertex {
   [[maybe_unused]] [[nodiscard]] const glm::vec3 &getColor() const {
 	return color;
   }
-  explicit Vertex(glm::vec3 _pos = {0, 0, 0}, bool _front = true, glm::vec3 _color = {0, 0, 0}) {
+  explicit Vertex(glm::vec3 _pos = {0, 0, 0}, glm::vec3 _color = {0, 0, 0}) {
 	setPosition(_pos);
 	setColor(_color);
-	front = _front;
   }
 
  private:

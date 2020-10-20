@@ -9,8 +9,16 @@
 #include "vertex.hpp"
 class VertexBuffer : public Buffer {
  private:
+  std::vector<Vertex> vertices_vec;
+
+ public:
+  [[nodiscard]] const std::vector<Vertex> &getVertices() const {
+	return vertices_vec;
+  }
+
  public:
   explicit VertexBuffer(const std::vector<Vertex> &_vertices) {
+	vertices_vec = _vertices;
 	std::vector<float> vertices;
 	for (auto &vector : _vertices) {
 	  vertices.push_back(vector.getPosition().x);
@@ -23,7 +31,7 @@ class VertexBuffer : public Buffer {
 	spdlog::info("VertexBuffer(Vertex) created rendererID: {}", rendererID);
   }
 
-  [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
+  [[deprecated]] [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));

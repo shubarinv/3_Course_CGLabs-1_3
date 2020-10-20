@@ -36,6 +36,9 @@ class Shader {
   void setUniform4f(const std::string &name, glm::vec4 vec4) {
 	glCall(glUniform4f(getUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w));
   }
+  void setUniformMat4f(const std::string &name, const glm::mat4 &matrix) {
+	glCall(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
+  }
 
  private:
   ShaderProgramSource source;
@@ -44,7 +47,7 @@ class Shader {
 	if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
 	  return uniformLocationCache[name];
 	}
-	glCall(int location = glGetUniformLocation(rendererID, "u_Color"));
+	glCall(int location = glGetUniformLocation(rendererID, name.c_str()));
 	if (location == -1) {
 	  spdlog::warn("Uniform with name {} does not exist", name);
 	}
