@@ -11,7 +11,6 @@
 class VertexArray {
  private:
   unsigned int rendererID{};
-  unsigned int offset{0};
 
  public:
   VertexArray() {
@@ -28,7 +27,8 @@ class VertexArray {
   [[maybe_unused]] static void unbind() {
 	glCall(glBindVertexArray(0));
   }
-  void addBuffer(const Buffer &buffer, const VertexBufferLayout &layout, int vertexAttribIndex = 0) {
+  void addBuffer(const Buffer &buffer, const VertexBufferLayout &layout, int vertexAttribIndex = 0) const {
+	unsigned int offset{0};
 	bind();
 	buffer.bind();
 	const auto &elements = layout.getElements();
