@@ -173,7 +173,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   );
   // Или, для ортокамеры
   glm::mat4 view = glm::lookAt(
-	  glm::vec3(3, 2, 2),// Камера находится в мировых координатах (4,3,3)
+	  glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
 	  glm::vec3(0, 0, 0),// И направлена в начало координат
 	  glm::vec3(0, 1, 0) // "Голова" находится сверху
   );
@@ -183,19 +183,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
   /* Loop until the user closes the window */
   glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-  // Включить тест глубины
-  glEnable(GL_DEPTH_TEST);
-  // Фрагмент будет выводиться только в том, случае, если он находится ближе к камере, чем предыдущий
-  glDepthFunc(GL_LESS);
+
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
 	Renderer::clear();
-	const float radius = 5.0f;
-	float camX         = sin(glfwGetTime()) * radius;
-	float camZ         = cos(glfwGetTime()) * radius;
-	float camY         = tan(glfwGetTime()) * camZ + camX;
-	view               = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	MVPmatrix          = projection * view * model;// Запомните! В обратном порядке!
+	//	view               = glm::lookAt(glm::vec3(3, 0, 0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	//	MVPmatrix          = projection * view * model;// Запомните! В обратном порядке!
 	lShader.bind();
 	lShader.setUniformMat4f("u_MVP", MVPmatrix);
 
@@ -203,18 +196,25 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	Renderer::draw(&vertexArray, &index_buffer0, &lShader);
 	switch (selected_optionY) {
 	  case 0:
+		glCall(glDisable(GL_DEPTH_TEST));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
-	  case 3:
-		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+	  case 1:
+		// Включить тест глубины
+		glCall(glEnable(GL_DEPTH_TEST));
+		// Фрагмент будет выводиться только в том, случае, если он находится ближе к камере, чем предыдущий
+		glDepthFunc(GL_LESS);
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
 	  case 2:
 		glCall(glPointSize(10));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_POINT));
 		break;
-	  case 1:
-		glCall(glEnable(GL_DEPTH_TEST));
-		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+
+	  case 3:
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+		break;
+
 	  default:
 		break;
 	}
