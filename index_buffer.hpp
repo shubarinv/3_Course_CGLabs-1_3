@@ -24,6 +24,23 @@ class IndexBuffer : public Buffer {
 	length = indices.size();
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
+  explicit IndexBuffer(const std::vector<Vertex> &vertices) {
+	std::vector<unsigned int> indices;
+
+	for (unsigned int i = 1; i < vertices.size(); i++) {
+
+	  indices.push_back(i);
+
+	  if (indices.size() % 3 == 0) {
+		indices.push_back(i);
+	  }
+	}
+	glCall(glGenBuffers(1, &rendererID));
+	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
+	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
+	length = indices.size();
+	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
+  }
   ~IndexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
 	spdlog::info("IndexBuffer destroyed rendererID: {}", rendererID);
