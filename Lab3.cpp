@@ -17,7 +17,6 @@
 
 int selected_optionX = 0;
 int selected_optionY = 0;
-float x{0}, y{0}, z{0};
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
   spdlog::info("Keyboard callback");
   if ((key == GLFW_KEY_Q && action == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
@@ -43,24 +42,6 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
   if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
 	selected_optionX++;
 	spdlog::info("selected_optionX is now {}", selected_optionX);
-  }
-  if (key == GLFW_KEY_A && action == GLFW_REPEAT) {
-	x += 0.3;
-  }
-  if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
-	x -= 0.3;
-  }
-  if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT) {
-	y += 0.3;
-  }
-  if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_REPEAT) {
-	y -= 0.3;
-  }
-  if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
-	z += 0.3;
-  }
-  if (key == GLFW_KEY_S && action == GLFW_REPEAT) {
-	z -= 0.3;
   }
 }
 
@@ -190,12 +171,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
 	Renderer::clear();
-	const float radius = 5.0f;
-	float camX         = sin(glfwGetTime()) * radius;
-	float camZ         = cos(glfwGetTime()) * radius;
-	float camY         = tan(glfwGetTime()) * camZ + camX;
-	view               = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	MVPmatrix          = projection * view * model;// Запомните! В обратном порядке!
+	const float radius = 2.0f;
+	float camX = sin(glfwGetTime()) * radius;
+	float camZ = cos(glfwGetTime()) * radius;
+	float camY = tan(glfwGetTime()) * camZ + camX;
+	view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	lShader.bind();
 	lShader.setUniformMat4f("u_MVP", MVPmatrix);
 
