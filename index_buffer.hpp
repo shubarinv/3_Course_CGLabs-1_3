@@ -27,6 +27,14 @@ class IndexBuffer : public Buffer {
   explicit IndexBuffer(const std::vector<Vertex> &vertices) {
 	std::vector<unsigned int> indices;
 
+	for (unsigned int i = 0; i < vertices.size(); i++) {
+
+	  indices.push_back(i);
+
+	  if (indices.size() % 3 == 0) {
+		indices.push_back(i);
+	  }
+	}
 	for (unsigned int i = 1; i < vertices.size(); i++) {
 
 	  indices.push_back(i);

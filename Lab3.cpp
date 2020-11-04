@@ -65,6 +65,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
   VertexArray vertexArray;
   VertexArray vertexArrayHyperboloid;
+  VertexArray vertexArrayCube;
   VertexArray vertexArrayPoints;
   VertexBuffer vertexBuffer({
 								Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
@@ -81,24 +82,117 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	double angle = 2 * 3.141 * i / 200;
 	double pointX = cos(angle);
 	double pointY = sin(angle);
-	tmp.push_back(Vertex({pointX, 0.5, pointY}, {.1, 0.5, 0.21}));
-	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.5, sin(2 * 3.141 * (i + 50) / 200)}, {.81, 0.33, 0.81}));
+	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.1, 0.5, 0.21}));
+	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.6, sin(2 * 3.141 * (i + 50) / 200)}, {.81, 0.33, 0.81}));
   }
   VertexBuffer vbHyperboloid{tmp};
   VertexBufferLayout layout;
+  VertexBufferLayout layoutCube;
   VertexBufferLayout layoutHyperboloid;
+  VertexBuffer vertexBufferCube({
+									Vertex({
+											   -1.0,
+											   -1.0,
+											   1.0,
+										   },
+										   {1.0, 0.0, 0.0}),
+									Vertex({
+											   1.0,
+											   -1.0,
+											   1.0,
+										   },
+										   {
+											   0.0,
+											   1.0,
+											   0.0,
+										   }),
+									Vertex({
+											   1.0,
+											   1.0,
+											   1.0,
+										   },
+										   {
+											   0.0,
+											   0.0,
+											   1.0,
+										   }),
+									Vertex({
+											   -1.0,
+											   1.0,
+											   1.0,
+										   },
+										   {
+											   1.0,
+											   1.0,
+											   1.0,
+										   }),
+									Vertex({
+											   -1.0,
+											   -1.0,
+											   -1.0,
+										   },
+										   {
+											   1.0,
+											   0.0,
+											   0.0,
+										   }),
+									Vertex({
+											   1.0,
+											   -1.0,
+											   -1.0,
+										   },
+										   {
+											   0.0,
+											   1.0,
+											   0.0,
+										   }),
+									Vertex({
+											   1.0,
+											   1.0,
+											   -1.0,
+										   },
+										   {
+											   0.0,
+											   0.0,
+											   1.0,
+										   }),
+									Vertex({-1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}),
+								});
+
   ColorBuffer colorBuffer(vertexBuffer.getVertices());
   ColorBuffer colorBufferHyperboloid(vbHyperboloid.getVertices());
+  ColorBuffer colorBufferCube(vertexBufferCube.getVertices());
   layout.push<float>(3);           ///< number of params for each vertex
+  layoutCube.push<float>(3);           ///< number of params for each vertex
   layoutHyperboloid.push<float>(3);///< number of params for each vertex
   vertexArray.addBuffer(vertexBuffer, layout);
   vertexArray.addBuffer(colorBuffer, layout, 1);
   vertexArrayHyperboloid.addBuffer(vbHyperboloid, layoutHyperboloid);
   vertexArrayHyperboloid.addBuffer(colorBufferHyperboloid, layoutHyperboloid, 1);
+  vertexArrayCube.addBuffer(vertexBufferCube, layoutCube);
+  vertexArrayCube.addBuffer(colorBufferCube, layoutCube, 1);
+
   IndexBuffer index_buffer0({1, 3, 5, 5, 7, 1});
   IndexBuffer index_buffer1({0, 2, 4, 4, 6, 0});
   IndexBuffer index_buffer2({0, 1, 2, 3, 2, 4, 4, 2, 5, 5, 0, 2});
   IndexBuffer index_buffer3(tmp);
+  IndexBuffer index_bufferCube({0, 1, 2,
+								2, 3, 0,
+								   // right
+								1, 5, 6,
+								6, 2, 1,
+								   // back
+								7, 6, 5,
+								5, 4, 7,
+								   // left
+								4, 0, 3,
+								3, 7, 4,
+								   // bottom
+								4, 5, 1,
+								1, 0, 4,
+								   // top
+								3, 2, 6,
+								6, 7, 3});
   float r = 0.0f;
   float increment = 0.05f;
 
@@ -124,14 +218,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
 	Renderer::clear();
-	if (selected_optionX != 3) {
+	if (selected_optionX < 3) {
 	  view = glm::lookAt(
 		  glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
 		  glm::vec3(0, 0, 0),// И направлена в начало координат
 		  glm::vec3(0, 1, 0) // "Голова" находится сверху
 	  );
+	  model = glm::mat4(1.0f);// Индивидуально для каждой модели
 	  MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	}
+
 	lShader.bind();
 	lShader.setUniformMat4f("u_MVP", MVPmatrix);
 
@@ -143,7 +239,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		break;
 	  case 2: Renderer::draw(&vertexArray, &index_buffer2, &lShader);
 		break;
-	  case 3: const float radius = 1.2f;
+	  case 3: {
+		const float radius = 1.2f;
 		float camX = sin(glfwGetTime()) * radius;
 		float camY = cos(glfwGetTime()) * radius;
 		float camZ = tan(glfwGetTime()) * camY + camX;
@@ -151,7 +248,41 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &lShader);
 		break;
+	  }
+	  case 4: view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		model = glm::rotate(model, 0.001f, {0, 0, 1});
+		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &lShader);
+		break;
+	  case 5: uShader.bind();
+		uShader.setUniformMat4f("u_MVP", MVPmatrix);
+		uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
+		view = glm::lookAt(
+			glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 0),// И направлена в начало координат
+			glm::vec3(0, 1, 0) // "Голова" находится сверху
+		);
+		model = glm::scale(
+			glm::mat4(1.0f),
+			glm::vec3(r)
+		);
+		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &uShader);
+		break;
+
+	  case 6:
+		view = glm::lookAt(
+			glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 0),// И направлена в начало координат
+			glm::vec3(0, 1, 0) // "Голова" находится сверху
+		);
+		model = glm::mat4(1.0f);// Индивидуально для каждой модели
+		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		Renderer::draw(&vertexArrayCube, &index_bufferCube, &lShader);
+		break;
+
 	}
+
 	switch (selected_optionY) {
 	  case 0: glCall(glDisable(GL_DEPTH_TEST));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
@@ -163,23 +294,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		glDepthFunc(GL_LESS);
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
-	  case 2:
-		glCall(glPointSize(10));
+	  case 2: glCall(glPointSize(10));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_POINT));
 		break;
 
-	  case 3:
-		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+	  case 3: glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 		break;
 
-	  default:
-		break;
+	  default: break;
 	}
 
-	if (r > 1.0f)
-	  increment = -0.05f;
+	if (r > 2.0f)
+	  increment = -0.011f;
 	else if (r < 0.0f)
-	  increment = 0.05f;
+	  increment = 0.01f;
 	r += increment;
 	/* Swap front and back buffers */
 	glfwSwapBuffers(window.getWindow());
