@@ -272,12 +272,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
 	  case 6:
 		view = glm::lookAt(
-			glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 4),// Камера находится в мировых координатах (4,3,3)
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model = glm::mat4(1.0f);// Индивидуально для каждой модели
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		model = glm::rotate(model, 0.001f, {0, 1, 1});
 		Renderer::draw(&vertexArrayCube, &index_bufferCube, &lShader);
 		break;
 
