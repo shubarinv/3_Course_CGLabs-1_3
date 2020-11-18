@@ -197,10 +197,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 								6, 7, 3});
   float r = 0.0f;
   float increment = 0.05f;
+  Cone cone00({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});
+  Cone cone0({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});
+  Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.3, 0.9, 0.3});
+  Cone cone2({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});
 
-  Cone cone0({0, 0.3, 0}, 0.4, 0.5, 4, {.1, 0.7, 0.1});
-  Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.1, 0.6, 0.15});
-  Cone cone2({0, -0.6, 0}, 0.7, 1, 4, {.1, 0.5, 0.21});
   Cylinder cyl1({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});
 
   glm::mat4 projection = glm::perspective(
@@ -294,11 +295,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model = glm::rotate(model, 0.004f, {1, 0, 0});
+		model = glm::rotate(model, 0.004f, {0, 1, 0});
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		Renderer::draw(cone2.getVertexArray(), cone2.getIndexBuffer(), &lShader);
 		Renderer::draw(cone1.getVertexArray(), cone1.getIndexBuffer(), &lShader);
 		Renderer::draw(cone0.getVertexArray(), cone0.getIndexBuffer(), &lShader);
+		Renderer::draw(cone00.getVertexArray(), cone00.getIndexBuffer(), &lShader);
 		Renderer::draw(cyl1.getVertexArray(), cyl1.getIndexBuffer(), &lShader);
 		break;
 	  default:break;
