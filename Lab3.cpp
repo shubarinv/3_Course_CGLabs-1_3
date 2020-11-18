@@ -15,6 +15,8 @@
 #include "vertex_array.hpp"
 #include "vertex_buffer.hpp"
 #include "window.hpp"
+#include "cone.hpp"
+#include "cylinder.hpp"
 
 template<typename Numeric, typename Generator = std::mt19937>
 Numeric random(Numeric from, Numeric to) {
@@ -28,7 +30,7 @@ Numeric random(Numeric from, Numeric to) {
   return dist(gen, typename dist_type::param_type{from, to});
 }
 
-int selected_optionX = 0;
+int selected_optionX = 7;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
   spdlog::info("Keyboard callback");
@@ -196,6 +198,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   float r = 0.0f;
   float increment = 0.05f;
 
+  Cone cone0({0, 0.3, 0}, 0.4, 0.5, 4, {.1, 0.7, 0.1});
+  Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.1, 0.6, 0.15});
+  Cone cone2({0, -0.6, 0}, 0.7, 1, 4, {.1, 0.5, 0.21});
+  Cylinder cyl1({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});
+
   glm::mat4 projection = glm::perspective(
 	  glm::radians(90.f),// Вертикальное поле зрения в радианах. Обычно между 90&deg; (очень широкое) и 30&deg; (узкое)
 	  4.0f / 3.0f,       // Отношение сторон. Зависит от размеров вашего окна. Заметьте, что 4/3 == 800/600 == 1280/960
@@ -281,6 +288,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		Renderer::draw(&vertexArrayCube, &index_bufferCube, &lShader);
 		break;
 
+	  case 7: lShader.bind();
+		view = glm::lookAt(
+			glm::vec3(0, 0, 2),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 0),// И направлена в начало координат
+			glm::vec3(0, 1, 0) // "Голова" находится сверху
+		);
+		model = glm::rotate(model, 0.004f, {1, 0, 0});
+		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		Renderer::draw(cone2.getVertexArray(), cone2.getIndexBuffer(), &lShader);
+		Renderer::draw(cone1.getVertexArray(), cone1.getIndexBuffer(), &lShader);
+		Renderer::draw(cone0.getVertexArray(), cone0.getIndexBuffer(), &lShader);
+		Renderer::draw(cyl1.getVertexArray(), cyl1.getIndexBuffer(), &lShader);
+		break;
+	  default:break;
 	}
 
 	switch (selected_optionY) {
