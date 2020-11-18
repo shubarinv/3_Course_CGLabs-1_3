@@ -5,11 +5,11 @@
 #ifndef CGLABS__SHAPE_HPP_
 #define CGLABS__SHAPE_HPP_
 
-#include "index_buffer.hpp"
-#include "renderer.hpp"
+#include "../Buffers/index_buffer.hpp"
+#include "../renderer.hpp"
 class Shape {
  protected:
-  glm::vec3 color;
+  glm::vec3 color{};
   IndexBuffer *indexBuffer{};
   VertexBuffer *vertexBuffer{};
   VertexArray *vertexArray{};

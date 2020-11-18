@@ -6,7 +6,7 @@
 #define CGLABS__INDEX_BUFFER_HPP_
 
 #include "buffer.hpp"
-#include "lib.hpp"
+#include "../lib.hpp"
 class IndexBuffer : public Buffer {
  private:
   unsigned int length{};

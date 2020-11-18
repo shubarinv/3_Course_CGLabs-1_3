@@ -7,16 +7,16 @@
 #include <cmath>
 #include <random>
 
-#include "color_buffer.hpp"
-#include "index_buffer.hpp"
+#include "Buffers/color_buffer.hpp"
+#include "Buffers/index_buffer.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
-#include "vertex_array.hpp"
-#include "vertex_buffer.hpp"
+#include "Buffers/vertex_array.hpp"
+#include "Buffers/vertex_buffer.hpp"
 #include "window.hpp"
-#include "cone.hpp"
-#include "cylinder.hpp"
+#include "Shapes/cone.hpp"
+#include "Shapes/cylinder.hpp"
 
 template<typename Numeric, typename Generator = std::mt19937>
 Numeric random(Numeric from, Numeric to) {

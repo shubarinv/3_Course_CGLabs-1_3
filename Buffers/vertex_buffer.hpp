@@ -5,8 +5,8 @@
 #ifndef CGLABS__VERTEX_BUFFER_HPP_
 #define CGLABS__VERTEX_BUFFER_HPP_
 
-#include "lib.hpp"
-#include "vertex.hpp"
+#include "../lib.hpp"
+#include "../vertex.hpp"
 class VertexBuffer : public Buffer {
  private:
   std::vector<Vertex> vertices_vec;

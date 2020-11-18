@@ -14,8 +14,8 @@ find_package(GLM REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS}
         ${SPDLOG_INCLUDE_DIRS})
 
-add_executable(cgLabs renderer.hpp vertex_buffer.hpp index_buffer.hpp vertex_array.hpp vertex_buffer_layout.hpp shader.hpp vertex.hpp
-        lib.hpp window.hpp color_buffer.hpp buffer.hpp Lab3.cpp shape.hpp cone.hpp cylinder.hpp)
+add_executable(cgLabs renderer.hpp Buffers/vertex_buffer.hpp Buffers/index_buffer.hpp Buffers/vertex_array.hpp Buffers/vertex_buffer_layout.hpp shader.hpp vertex.hpp
+        lib.hpp window.hpp Buffers/color_buffer.hpp Buffers/buffer.hpp Lab3.cpp Shapes/shape.hpp Shapes/cone.hpp Shapes/cylinder.hpp)
 #        lib.hpp window.hpp color_buffer.hpp buffer.hpp Lab2.cpp)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw ${GLFW_LIBRARIES}GLEW::GLEW ${GLM_LIBRARIES}
         spdlog::spdlog)
