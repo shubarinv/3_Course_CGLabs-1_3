@@ -4,8 +4,8 @@
 
 #ifndef CGLABS__CONE_HPP_
 #define CGLABS__CONE_HPP_
-#include "shape.hpp"
-class Cone : public Shape {
+#include "../object.hpp"
+class Cone : public Object {
 
   static std::vector<Vertex> getCoordsForVertices(glm::vec3 position, double radius, int sides, glm::vec3 color = {0.5, 0, 0}) {
 	std::vector<Vertex> vertices;
@@ -46,6 +46,7 @@ class Cone : public Shape {
 	vertexArray = new VertexArray;
 	vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
 	vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	bInitialized = true;
   }
 };
 

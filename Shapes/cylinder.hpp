@@ -4,9 +4,9 @@
 
 #ifndef CGLABS__CYLINDER_HPP_
 #define CGLABS__CYLINDER_HPP_
-#include "shape.hpp"
+#include "../object.hpp"
 
-class Cylinder : public Shape {
+class Cylinder : public Object {
 
   static std::vector<Vertex> getCoordsForVertices(glm::vec3 position,
 												  double radius,
@@ -61,6 +61,7 @@ class Cylinder : public Shape {
 	vertexArray = new VertexArray;
 	vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
 	vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	bInitialized = true;
   }
 };
 
