@@ -33,6 +33,9 @@ class Shader {
   [[maybe_unused]] static void unbind() {
 	glCall(glUseProgram(0));
   }
+  void setUniform1i(const std::string &name, GLint value) {
+	glCall(glUniform1i(getUniformLocation(name), value));
+  }
   void setUniform4f(const std::string &name, glm::vec4 vec4) {
 	glCall(glUniform4f(getUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w));
   }
@@ -43,7 +46,8 @@ class Shader {
  private:
   ShaderProgramSource source;
   std::unordered_map<std::string, int> uniformLocationCache;
-  [[nodiscard]] int getUniformLocation(const std::string &name) {
+
+  [[nodiscard]] GLint getUniformLocation(const std::string &name) {
 	if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
 	  return uniformLocationCache[name];
 	}

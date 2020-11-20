@@ -31,7 +31,7 @@ class VertexBuffer : public Buffer {
 	spdlog::info("VertexBuffer(Vertex) created rendererID: {}", rendererID);
   }
 
-  [[deprecated]] [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
+  [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));

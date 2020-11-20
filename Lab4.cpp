@@ -7,6 +7,7 @@
 #include "window.hpp"
 #include "shader.hpp"
 #include "renderer.hpp"
+#include "texture.hpp"
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
@@ -18,52 +19,43 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
 	glfwTerminate();
 	exit(0);
   }
-  if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
-	selected_optionY--;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
-  }
-  if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-
-	selected_optionY++;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
-  }
-  if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
-	selected_optionX--;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
-  }
-  if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-	selected_optionX++;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
-  }
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
   Window window({800, 600});
-  Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
-  Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
-  glm::mat4 projection = glm::perspective(
-	  glm::radians(90.f),// Вертикальное поле зрения в радианах. Обычно между 90&deg; (очень широкое) и 30&deg; (узкое)
-	  4.0f / 3.0f,       // Отношение сторон. Зависит от размеров вашего окна. Заметьте, что 4/3 == 800/600 == 1280/960
-	  0.1f,              // Ближняя плоскость отсечения. Должна быть больше 0.
-	  100.0f             // Дальняя плоскость отсечения.
-  );
-  // Или, для ортокамеры
-  glm::mat4 view = glm::lookAt(
-	  glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
-	  glm::vec3(0, 0, 0),// И направлена в начало координат
-	  glm::vec3(0, 1, 0) // "Голова" находится сверху
-  );
-  // Матрица модели : единичная матрица (Модель находится в начале координат)
-  glm::mat4 model = glm::mat4(1.0f);// Индивидуально для каждой модели
+  //Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
+  //Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
+  Shader tShader("../resources/shaders/basic_w_texture.glsl");///< use this shader when you want to use uniforms
 
-  glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-  /* Loop until the user closes the window */
   glfwSetKeyCallback(window.getWindow(), handleKeyboard);
+  Texture test("../resources/textures/noTex.png");
+  test.bind();
+  tShader.bind();
+  tShader.setUniform1i("u_Texture", 0);
+  Object testObj;
+  float positions[] = {
+	  -0.5f, -0.5f, 0.0f, 0.0f,
+	  0.5f, -0.5f, 1.0f, 0.0f,
+	  0.5f, 0.5f, 1.0f, 1.0f,
+	  -0.5f, -0.5f, 0.0f, 1.0f
+  };
+  std::vector<unsigned int> indices = {
+	  0, 1, 2,
+	  2, 3, 0
+  };
 
+  testObj.setVertexBuffer(positions, sizeof(positions) / sizeof(positions[0]));
+  testObj.setIndexBuffer(indices);
+  testObj.setLayoutLength(2);
+  testObj.setTimesToPushLayout(2);
+  testObj.init();
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
 	Renderer::clear();
+
+	Renderer::draw(&testObj, &tShader);
+
 	/* Swap front and back buffers */
 	glfwSwapBuffers(window.getWindow());
 

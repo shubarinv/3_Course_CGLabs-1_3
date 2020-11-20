@@ -18,6 +18,8 @@ class Object {
   VertexArray *vertexArray{};
   ColorBuffer *colorBuffer{};
   VertexBufferLayout *bufferLayout{};
+  unsigned int layoutLength{3};
+  int timesToPushLayout = {1};
   bool bInitialized{false};
  public:
   [[nodiscard]] IndexBuffer *getIndexBuffer() const {
@@ -36,16 +38,26 @@ class Object {
   void setIndexBuffer(std::vector<unsigned int> _indices) {
 	indexBuffer = new IndexBuffer(std::move(_indices));
   }
-  void setIndexBuffer(std::vector<Vertex> _vertices) {
+  void setIndexBuffer(const std::vector<Vertex> &_vertices) {
 	indexBuffer = new IndexBuffer(_vertices);
   }
   void setVertexBuffer(VertexBuffer _vertexBuffer) {
 	vertexBuffer = &_vertexBuffer;
   }
+  void setVertexBuffer(const void *data, unsigned int size) {
+	vertexBuffer = new VertexBuffer(data, size);
+  }
   void setVertexBuffer(const std::vector<Vertex> &vertices) {
 	colorBuffer = new ColorBuffer(vertices);
 	vertexBuffer = new VertexBuffer(vertices);
   }
+  void setLayoutLength(unsigned int length) {
+	layoutLength = length;
+  }
+  void setTimesToPushLayout(int times) {
+	timesToPushLayout = times;
+  }
+
 //todo  void setColorBuffer(const std::vector<glm::vec3> &_colors) {}
   void setColorBuffer(const std::vector<Vertex> &_verticesWithColors) {
 	colorBuffer = new ColorBuffer(_verticesWithColors);
@@ -61,10 +73,14 @@ class Object {
 	  throw std::runtime_error("Object init failed");
 	}
 	bufferLayout = new VertexBufferLayout();
-	bufferLayout->push<float>(3);
+	for (int i = 0; i < timesToPushLayout; i++) {
+	  bufferLayout->push<float>(layoutLength);
+	}
 	vertexArray = new VertexArray();
 	vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
-	vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	if (colorBuffer != nullptr) {
+	  vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	}
 	bInitialized = true;
   }
 
