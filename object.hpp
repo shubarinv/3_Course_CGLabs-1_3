@@ -9,6 +9,7 @@
 
 #include "Buffers/index_buffer.hpp"
 #include "renderer.hpp"
+#include "Buffers/color_buffer.hpp"
 class Object {
  protected:
   glm::vec3 color{};

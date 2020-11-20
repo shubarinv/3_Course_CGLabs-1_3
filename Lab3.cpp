@@ -17,18 +17,6 @@
 #include "Shapes/cone.hpp"
 #include "Shapes/cylinder.hpp"
 
-template<typename Numeric, typename Generator = std::mt19937>
-Numeric random(Numeric from, Numeric to) {
-  thread_local static Generator gen(std::random_device{}());
-
-  using dist_type = typename std::conditional<
-	  std::is_integral<Numeric>::value, std::uniform_int_distribution<Numeric>, std::uniform_real_distribution<Numeric> >::type;
-
-  thread_local static dist_type dist;
-
-  return dist(gen, typename dist_type::param_type{from, to});
-}
-
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
@@ -149,7 +137,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
-	Renderer::clear();
+	Renderer::clear({0.16, 0.36, 0.42, 0});
 	if (selected_optionX < 3) {
 	  view = glm::lookAt(
 		  glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
