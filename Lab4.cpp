@@ -33,11 +33,16 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   spdlog::info("App stated!");
   Window window({800, 600});
+
   //Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
   //Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
   Shader tShader("../resources/shaders/basic_w_texture.glsl");///< use this shader when you want to use uniforms
 
   glfwSetKeyCallback(window.getWindow(), handleKeyboard);
+
+  glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+  glCall(glEnable(GL_BLEND));
+
   Texture test("../resources/textures/Unknown.png");
   test.bind();
   tShader.bind();
