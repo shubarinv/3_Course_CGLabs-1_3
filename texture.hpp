@@ -12,7 +12,7 @@ class Texture : public Buffer {
   unsigned int rendererID{};
   std::string filepath{};
   std::vector<unsigned char> localBuffer{};
-  unsigned int width{0}, height{0}, bitsPerPixel{0};
+  unsigned int width{0}, height{0};
  public:
   explicit Texture(std::string _filepath) {
 	filepath = std::move(_filepath);
@@ -21,9 +21,10 @@ class Texture : public Buffer {
 	load();
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
+	glCall(glGenerateMipmap(GL_TEXTURE_2D));
 	glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, localBuffer.data()));
 	unbind();
   }

@@ -56,6 +56,12 @@ class Window {
 	}
 	spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
 	spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
+	GLint maxShaderTextures;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxShaderTextures);
+	GLint maxTotalTextures;
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTotalTextures);
+	spdlog::info("Number of textures that can be accessed by the fragment shader: {}", maxShaderTextures);
+	spdlog::info("Total number of textures that can be used {}", maxTotalTextures);
   }
   [[maybe_unused]] void updateFpsCounter() {
 	static double previous_seconds = glfwGetTime();
