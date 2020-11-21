@@ -19,6 +19,15 @@ void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, 
 	glfwTerminate();
 	exit(0);
   }
+  if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
+	selected_optionY--;
+	spdlog::info("selected_optionY is now {}", selected_optionY);
+  }
+  if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+
+	selected_optionY++;
+	spdlog::info("selected_optionY is now {}", selected_optionY);
+  }
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
@@ -29,38 +38,69 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Shader tShader("../resources/shaders/basic_w_texture.glsl");///< use this shader when you want to use uniforms
 
   glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-  Texture test("../resources/textures/noTex.png");
+  Texture test("../resources/textures/Unknown.png");
   test.bind();
   tShader.bind();
   tShader.setUniform1i("u_Texture", 0);
-  Object testObj;
   float positions[] = {
-	  -0.5f, -0.5f, 0.0f, 0.0f,
-	  0.5f, -0.5f, 1.0f, 0.0f,
-	  0.5f, 0.5f, 1.0f, 1.0f,
-	  -0.5f, -0.5f, 0.0f, 1.0f
+	  -0.5f, -0.5f,
+	  0.5f, -0.5f,
+	  0.5f, 0.5f,
+	  -0.5f, 0.5f,
   };
-  std::vector<unsigned int> indices = {
+  float texCoords[] = {
+	  0.0f, 0.0f,
+	  1.0f, 0.0f,
+	  1.0f, 1.0f,
+	  0.0f, 1.0f
+  };
+  unsigned int indices[] = {
 	  0, 1, 2,
 	  2, 3, 0
   };
 
-  testObj.setVertexBuffer(positions, sizeof(positions) / sizeof(positions[0]));
-  testObj.setIndexBuffer(indices);
-  testObj.setLayoutLength(2);
-  testObj.setTimesToPushLayout(2);
-  testObj.init();
+  VertexArray va;
+  VertexBuffer vb(positions, 8 * sizeof(float));
+  VertexBuffer vbTex(texCoords, 8 * sizeof(float));
+  VertexBufferLayout layout;
+  layout.push<float>(2);
+  va.addBuffer(vb, layout);
+  va.addBuffer(vbTex, layout, 1);
+
+  IndexBuffer ib(indices, 6);
   while (!glfwWindowShouldClose(window.getWindow())) {
+
 	window.updateFpsCounter();
 	Renderer::clear();
 
-	Renderer::draw(&testObj, &tShader);
+	Renderer::draw(&va, &ib, &tShader);
 
+	switch (selected_optionY) {
+	  case 0: glCall(glDisable(GL_DEPTH_TEST));
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+		break;
+	  case 1:
+		// Включить тест глубины
+	  glCall(glEnable(GL_DEPTH_TEST));
+		// Фрагмент будет выводиться только в том, случае, если он находится ближе к камере, чем предыдущий
+		glDepthFunc(GL_LESS);
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+		break;
+	  case 2: glCall(glPointSize(10));
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_POINT));
+		break;
+
+	  case 3: glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+		break;
+
+	  default: break;
+	}
 	/* Swap front and back buffers */
 	glfwSwapBuffers(window.getWindow());
 
 	/* Poll for and process events */
 	glfwPollEvents();
+
   }
   window.destroy();
   spdlog::info("Program finished");
