@@ -7,26 +7,15 @@
 #include <cmath>
 #include <random>
 
-#include "color_buffer.hpp"
-#include "index_buffer.hpp"
+#include "Buffers/color_buffer.hpp"
+#include "Buffers/index_buffer.hpp"
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
-#include "vertex_array.hpp"
-#include "vertex_buffer.hpp"
+#include "Buffers/vertex_array.hpp"
 #include "window.hpp"
-
-template<typename Numeric, typename Generator = std::mt19937>
-Numeric random(Numeric from, Numeric to) {
-  thread_local static Generator gen(std::random_device{}());
-
-  using dist_type = typename std::conditional<
-	  std::is_integral<Numeric>::value, std::uniform_int_distribution<Numeric>, std::uniform_real_distribution<Numeric> >::type;
-
-  thread_local static dist_type dist;
-
-  return dist(gen, typename dist_type::param_type{from, to});
-}
+#include "Shapes/cone.hpp"
+#include "Shapes/cylinder.hpp"
 
 int selected_optionX = 0;
 int selected_optionY = 0;
@@ -63,20 +52,27 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Window window({800, 600});
   Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
   Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
-  VertexArray vertexArray;
-  VertexArray vertexArrayHyperboloid;
-  VertexArray vertexArrayCube;
-  VertexArray vertexArrayPoints;
-  VertexBuffer vertexBuffer({
-								Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
-								Vertex({-0.6f, 0.6f, 0}, {.70, 0.20, 0.2}),
-								Vertex({-0.84853f, 0, 0}, {.1, 0.4, 0.2}),
-								Vertex({-0.6f, -0.6f, 0}, {.3, 0.7, 0.9}),
-								Vertex({0.f, -0.84853f, 0}, {.0, 0.3, 0.1}),
-								Vertex({0.6f, -0.6f, 0}, {.8, 0.5, 0.8}),
-								Vertex({0.84853f, 0.0f, 0}, {.7, 0.4, 0.5}),
-								Vertex({0.6f, 0.6f, 0}, {.1, 0.5, 0.21}),
-							});
+
+  Object objGeneral;
+  Object objHyperboloid;
+  Object objCube;
+  Cone cone00({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});
+  Cone cone0({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});
+  Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.3, 0.9, 0.3});
+  Cone cone2({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});
+  Cylinder cyl1({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});
+
+  objGeneral.setVertexBuffer({
+								 Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
+								 Vertex({-0.6f, 0.6f, 0}, {.70, 0.20, 0.2}),
+								 Vertex({-0.84853f, 0, 0}, {.1, 0.4, 0.2}),
+								 Vertex({-0.6f, -0.6f, 0}, {.3, 0.7, 0.9}),
+								 Vertex({0.f, -0.84853f, 0}, {.0, 0.3, 0.1}),
+								 Vertex({0.6f, -0.6f, 0}, {.8, 0.5, 0.8}),
+								 Vertex({0.84853f, 0.0f, 0}, {.7, 0.4, 0.5}),
+								 Vertex({0.6f, 0.6f, 0}, {.1, 0.5, 0.21}),
+							 });
+
   std::vector<Vertex> tmp;
   for (int i = 0; i <= 200; i++) {
 	double angle = 2 * 3.141 * i / 200;
@@ -85,114 +81,38 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.1, 0.5, 0.21}));
 	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.6, sin(2 * 3.141 * (i + 50) / 200)}, {.81, 0.33, 0.81}));
   }
-  VertexBuffer vbHyperboloid{tmp};
-  VertexBufferLayout layout;
-  VertexBufferLayout layoutCube;
-  VertexBufferLayout layoutHyperboloid;
-  VertexBuffer vertexBufferCube({
-									Vertex({
-											   -1.0,
-											   -1.0,
-											   1.0,
-										   },
-										   {1.0, 0.0, 0.0}),
-									Vertex({
-											   1.0,
-											   -1.0,
-											   1.0,
-										   },
-										   {
-											   0.0,
-											   1.0,
-											   0.0,
-										   }),
-									Vertex({
-											   1.0,
-											   1.0,
-											   1.0,
-										   },
-										   {
-											   0.0,
-											   0.0,
-											   1.0,
-										   }),
-									Vertex({
-											   -1.0,
-											   1.0,
-											   1.0,
-										   },
-										   {
-											   1.0,
-											   1.0,
-											   1.0,
-										   }),
-									Vertex({
-											   -1.0,
-											   -1.0,
-											   -1.0,
-										   },
-										   {
-											   1.0,
-											   0.0,
-											   0.0,
-										   }),
-									Vertex({
-											   1.0,
-											   -1.0,
-											   -1.0,
-										   },
-										   {
-											   0.0,
-											   1.0,
-											   0.0,
-										   }),
-									Vertex({
-											   1.0,
-											   1.0,
-											   -1.0,
-										   },
-										   {
-											   0.0,
-											   0.0,
-											   1.0,
-										   }),
-									Vertex({-1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}),
-								});
-
-  ColorBuffer colorBuffer(vertexBuffer.getVertices());
-  ColorBuffer colorBufferHyperboloid(vbHyperboloid.getVertices());
-  ColorBuffer colorBufferCube(vertexBufferCube.getVertices());
-  layout.push<float>(3);           ///< number of params for each vertex
-  layoutCube.push<float>(3);           ///< number of params for each vertex
-  layoutHyperboloid.push<float>(3);///< number of params for each vertex
-  vertexArray.addBuffer(vertexBuffer, layout);
-  vertexArray.addBuffer(colorBuffer, layout, 1);
-  vertexArrayHyperboloid.addBuffer(vbHyperboloid, layoutHyperboloid);
-  vertexArrayHyperboloid.addBuffer(colorBufferHyperboloid, layoutHyperboloid, 1);
-  vertexArrayCube.addBuffer(vertexBufferCube, layoutCube);
-  vertexArrayCube.addBuffer(colorBufferCube, layoutCube, 1);
+  objHyperboloid.setVertexBuffer(tmp);
+  objHyperboloid.setIndexBuffer(tmp);
+  objCube.setVertexBuffer({
+							  Vertex({-1.0, -1.0, 1.0,}, {1.0, 0.0, 0.0}),
+							  Vertex({1.0, -1.0, 1.0,}, {0.0, 1.0, 0.0,}),
+							  Vertex({1.0, 1.0, 1.0,}, {0.0, 0.0, 1.0,}),
+							  Vertex({-1.0, 1.0, 1.0,}, {1.0, 1.0, 1.0,}),
+							  Vertex({-1.0, -1.0, -1.0,}, {1.0, 0.0, 0.0,}),
+							  Vertex({1.0, -1.0, -1.0,}, {0.0, 1.0, 0.0,}),
+							  Vertex({1.0, 1.0, -1.0,}, {0.0, 0.0, 1.0,}),
+							  Vertex({-1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}),
+						  });
 
   IndexBuffer index_buffer0({1, 3, 5, 5, 7, 1});
   IndexBuffer index_buffer1({0, 2, 4, 4, 6, 0});
   IndexBuffer index_buffer2({0, 1, 2, 3, 2, 4, 4, 2, 5, 5, 0, 2});
-  IndexBuffer index_buffer3(tmp);
-  IndexBuffer index_bufferCube({0, 1, 2,
-								2, 3, 0,
-								   // right
-								1, 5, 6,
-								6, 2, 1,
-								   // back
-								7, 6, 5,
-								5, 4, 7,
-								   // left
-								4, 0, 3,
-								3, 7, 4,
-								   // bottom
-								4, 5, 1,
-								1, 0, 4,
-								   // top
-								3, 2, 6,
-								6, 7, 3});
+
+  objCube.setIndexBuffer({0, 1, 2, 2, 3, 0,
+							 // right
+						  1, 5, 6, 6, 2, 1,
+							 // back
+						  7, 6, 5, 5, 4, 7,
+							 // left
+						  4, 0, 3, 3, 7, 4,
+							 // bottom
+						  4, 5, 1, 1, 0, 4,
+							 // top
+						  3, 2, 6, 6, 7, 3});
+  objGeneral.init();
+  objHyperboloid.init();
+  objCube.init();
+
   float r = 0.0f;
   float increment = 0.05f;
 
@@ -217,7 +137,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   while (!glfwWindowShouldClose(window.getWindow())) {
 	window.updateFpsCounter();
-	Renderer::clear();
+	Renderer::clear({0.16, 0.36, 0.42, 0});
 	if (selected_optionX < 3) {
 	  view = glm::lookAt(
 		  glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
@@ -231,13 +151,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	lShader.bind();
 	lShader.setUniformMat4f("u_MVP", MVPmatrix);
 
-	vertexArray.bind();
 	switch (selected_optionX) {
-	  case 0: Renderer::draw(&vertexArray, &index_buffer0, &lShader);
+	  case 0: objGeneral.setIndexBuffer(&index_buffer0);
+		Renderer::draw(&objGeneral, &lShader);
 		break;
-	  case 1: Renderer::draw(&vertexArray, &index_buffer1, &lShader);
+	  case 1: objGeneral.setIndexBuffer(&index_buffer1);
+		Renderer::draw(&objGeneral, &lShader);
 		break;
-	  case 2: Renderer::draw(&vertexArray, &index_buffer2, &lShader);
+	  case 2: objGeneral.setIndexBuffer(&index_buffer2);
+		Renderer::draw(&objGeneral, &lShader);
 		break;
 	  case 3: {
 		const float radius = 1.2f;
@@ -246,13 +168,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		float camZ = tan(glfwGetTime()) * camY + camX;
 		view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &lShader);
+		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  }
 	  case 4: view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		model = glm::rotate(model, 0.001f, {0, 0, 1});
-		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &lShader);
+		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  case 5: uShader.bind();
 		uShader.setUniformMat4f("u_MVP", MVPmatrix);
@@ -267,20 +189,35 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			glm::vec3(r)
 		);
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-		Renderer::draw(&vertexArrayHyperboloid, &index_buffer3, &uShader);
+		Renderer::draw(&objHyperboloid, &uShader);
 		break;
 
 	  case 6:
 		view = glm::lookAt(
-			glm::vec3(0, 0, 4),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
+		model = glm::mat4(1.0f);// Индивидуально для каждой модели
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-		model = glm::rotate(model, 0.001f, {0, 1, 1});
-		Renderer::draw(&vertexArrayCube, &index_bufferCube, &lShader);
+		Renderer::draw(&objCube, &lShader);
 		break;
 
+	  case 7: lShader.bind();
+		view = glm::lookAt(
+			glm::vec3(0, 0, 2),// Камера находится в мировых координатах (4,3,3)
+			glm::vec3(0, 0, 0),// И направлена в начало координат
+			glm::vec3(0, 1, 0) // "Голова" находится сверху
+		);
+		model = glm::rotate(model, 0.004f, {0, 1, 0});
+		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		Renderer::draw(&cone2, &lShader);
+		Renderer::draw(&cone1, &lShader);
+		Renderer::draw(&cone0, &lShader);
+		Renderer::draw(&cone00, &lShader);
+		Renderer::draw(&cyl1, &lShader);
+		break;
+	  default:break;
 	}
 
 	switch (selected_optionY) {

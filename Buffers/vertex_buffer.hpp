@@ -5,8 +5,8 @@
 #ifndef CGLABS__VERTEX_BUFFER_HPP_
 #define CGLABS__VERTEX_BUFFER_HPP_
 
-#include "lib.hpp"
-#include "vertex.hpp"
+#include "../lib.hpp"
+#include "../vertex.hpp"
 class VertexBuffer : public Buffer {
  private:
   std::vector<Vertex> vertices_vec;
@@ -31,7 +31,7 @@ class VertexBuffer : public Buffer {
 	spdlog::info("VertexBuffer(Vertex) created rendererID: {}", rendererID);
   }
 
-  [[deprecated]] [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
+  [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));

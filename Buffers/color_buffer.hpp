@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "buffer.hpp"
-#include "lib.hpp"
-#include "vertex.hpp"
+#include "../lib.hpp"
+#include "../vertex.hpp"
 class ColorBuffer : public Buffer {
 
  public:

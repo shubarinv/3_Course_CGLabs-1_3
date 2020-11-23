@@ -7,9 +7,10 @@
 
 #include <string>
 
-#include "index_buffer.hpp"
+#include "Buffers/index_buffer.hpp"
 #include "shader.hpp"
-#include "vertex_array.hpp"
+#include "Buffers/vertex_array.hpp"
+#include "object.hpp"
 
 class Renderer {
  public:
@@ -18,6 +19,12 @@ class Renderer {
 	vertexArray->bind();
 	indexBuffer->bind();
 	glCall(glDrawElements(mode, indexBuffer->getLength(), GL_UNSIGNED_INT, nullptr));
+  }
+  static void draw(Object *object, Shader *shader, GLuint mode = GL_TRIANGLES) {
+	shader->bind();
+	object->getVertexArray()->bind();
+	object->getIndexBuffer()->bind();
+	glCall(glDrawElements(mode, object->getIndexBuffer()->getLength(), GL_UNSIGNED_INT, nullptr));
   }
   static void clear(glm::vec4 clearColor = {0, 0, 0, 0}) {
 	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);

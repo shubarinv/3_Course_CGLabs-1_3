@@ -5,7 +5,7 @@
 #ifndef CGLABS__BUFFER_HPP_
 #define CGLABS__BUFFER_HPP_
 
-#include "lib.hpp"
+#include "../lib.hpp"
 class Buffer {
 
  public:
