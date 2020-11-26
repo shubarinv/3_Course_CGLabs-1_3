@@ -31,8 +31,14 @@ class Window {
 	}
 	title = std::move(_title);
 	glfwWindowHint(GLFW_SAMPLES, 4);              // 4x antialiasing
+	if(isMac()){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// We want OpenGL 4.1
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	}
+	else if(isWindows()){
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);// We want OpenGL 4.1
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	}
 	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL

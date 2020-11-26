@@ -4,8 +4,16 @@
 
 #ifndef CGLABS__LIB_HPP_
 #define CGLABS__LIB_HPP_
+#if defined (__APPLE__)
 #define ASSERT(X) \
-  if (!(X)){ __builtin_debugtrap();}
+  if (!(X)) __builtin_debugtrap();
+#endif
+
+#if defined (__WIN32__)
+#define ASSERT(X) \
+  if (!(X)) __debugbreak()
+#endif
+
 #define glCall(x)  \
   glClearErrors(); \
   x;               \
