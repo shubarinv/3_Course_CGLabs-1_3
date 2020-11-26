@@ -12,10 +12,15 @@
   ASSERT(glLogCall(#x, __FILE__, __LINE__))
 
 #define GL_SILENCE_DEPRECATION
-#include <GL/glew.h>
+#include <glad/glad.h>
+#if defined (__APPLE__)
+#include <OpenGL/glu.h>
+#endif
+#if defined (__WIN32__)
+#include <GL/glu.h>
+#endif
 #include <OpenGL/opengl.h>
 #include <spdlog/spdlog.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -27,7 +32,27 @@ bool glLogCall(const char *function, const char *file, int line) {
 }
 
 void glClearErrors() {
-  while (glGetError() != GL_NO_ERROR)
-	;
+  while (glGetError() != GL_NO_ERROR);
 }
+
+bool isWindows() {
+#if defined (__WIN32__)
+  return true;
+#endif
+  return false;
+}
+bool isMac() {
+#if defined (__APPLE__)
+  return true;
+#endif
+  return false;
+
+}
+bool isLinux() {
+#if defined (__unix__)
+  return true;
+#endif
+  return false;
+}
+bool is
 #endif//CGLABS__LIB_HPP_

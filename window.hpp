@@ -4,10 +4,11 @@
 
 #ifndef CGLABS__WINDOW_HPP_
 #define CGLABS__WINDOW_HPP_
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <utility>
+#include <iostream>
 
 #include "lib.hpp"
 
@@ -47,16 +48,12 @@ class Window {
 	  throw std::runtime_error("Failed to create window");
 	}
 	spdlog::debug("Window created successfully");
-// hide cursor
-//	glfwSetInputMode(glWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	/* Make the window's context current */
 	glfwMakeContextCurrent(glWindow);
-	GLenum err = glewInit();
-	if (GLEW_OK != err) {
-	  /* Problem: glewInit failed, something is seriously wrong. */
-	  spdlog::critical("Application::GLEW init failed: {}", glewGetErrorString(err));
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	  std::cout << "Failed to initialize OpenGL context" << std::endl;
+	  throw;
 	}
-	spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
 	spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
 	GLint maxShaderTextures;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxShaderTextures);
