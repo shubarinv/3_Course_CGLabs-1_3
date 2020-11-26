@@ -4,10 +4,10 @@ project(cgLabs)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 
 set(CMAKE_CXX_STANDARD 20)
-if (NOT TARGET spdlog)
-    # Stand-alone build
+
+if(APPLE)
     find_package(spdlog REQUIRED)
-endif ()
+endif()
 
 if (WIN32)
     include_directories(Libs/glfw/include)
@@ -15,6 +15,7 @@ if (WIN32)
 endif ()
 
 include_directories(Libs/glad/include)
+
 set(spdlog_DIR Libs/spdlog/cmake/spdlog)
 
 find_package(OpenGL REQUIRED)
@@ -37,7 +38,7 @@ add_executable(cgLabs Libs/glad/src/glad.c renderer.hpp Buffers/vertex_buffer.hp
         Libs/lodepng.hpp Libs/lodepng.cpp texture.hpp)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw3 ${GLFW_LIBRARIES} ${GLM_LIBRARIES} spdlog::spdlog)
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw3 ${GLFW_LIBRARIES} ${GLM_LIBRARIES} spdlog::spdlog_header_only)
 endif ()
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw ${GLFW3_LIBRARIES} ${GLM_LIBRARIES} spdlog::spdlog)
