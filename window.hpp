@@ -4,10 +4,10 @@
 
 #ifndef CGLABS__WINDOW_HPP_
 #define CGLABS__WINDOW_HPP_
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+
 
 #include <utility>
+#include <iostream>
 
 #include "lib.hpp"
 
@@ -27,17 +27,25 @@ class Window {
   explicit Window(glm::vec2 size, std::string _title = "UNSET ") {
 	/* Initialize the library */
 	if (!glfwInit()) {
-	  spdlog::critical("Application::Failed to init GLFW");
 	  throw std::runtime_error("Failed to init GLFW");
 	}
 	title = std::move(_title);
 	glfwWindowHint(GLFW_SAMPLES, 4);              // 4x antialiasing
+	if(isMac()){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// We want OpenGL 4.1
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	}
+	else if(isWindows()){
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);// We want OpenGL 4.1
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	}
 	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
-	spdlog::debug("GLFW Init - OK");
+
+	if(!isWindows()){
+	    spdlog::debug("GLFW Init - OK");
+	}
 	/* Create a windowed mode window and its OpenGL context */
 	glWindow = glfwCreateWindow(size.x, size.y, "Hello World", nullptr, nullptr);
 	if (!glWindow) {
@@ -46,16 +54,20 @@ class Window {
 	  throw std::runtime_error("Failed to create window");
 	}
 	spdlog::debug("Window created successfully");
-
 	/* Make the window's context current */
 	glfwMakeContextCurrent(glWindow);
-	GLenum err = glewInit();
-	if (GLEW_OK != err) {
-	  /* Problem: glewInit failed, something is seriously wrong. */
-	  spdlog::critical("Application::GLEW init failed: {}", glewGetErrorString(err));
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	  std::cout << "Failed to initialize OpenGL context" << std::endl;
+	  throw;
 	}
-	spdlog::info("Status: Using GLEW v{}", glewGetString(GLEW_VERSION));
 	spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
+	GLint maxShaderTextures;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxShaderTextures);
+	GLint maxTotalTextures;
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTotalTextures);
+	spdlog::info("Number of textures that can be accessed by the fragment shader: {}", maxShaderTextures);
+	spdlog::info("Total number of textures that can be used {}", maxTotalTextures);
+	glEnable(GL_MULTISAMPLE);
   }
   [[maybe_unused]] void updateFpsCounter() {
 	static double previous_seconds = glfwGetTime();

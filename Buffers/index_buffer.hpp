@@ -5,6 +5,7 @@
 #ifndef CGLABS__INDEX_BUFFER_HPP_
 #define CGLABS__INDEX_BUFFER_HPP_
 
+#include <vector>
 #include "../vertex.hpp"
 #include "buffer.hpp"
 #include "../lib.hpp"
@@ -23,6 +24,13 @@ class IndexBuffer : public Buffer {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
 	length = indices.size();
+	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
+  }
+  explicit IndexBuffer(const void *data, unsigned int size) {
+	glCall(glGenBuffers(1, &rendererID));
+	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
+	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), data, GL_STATIC_DRAW));
+	length = size;
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
   explicit IndexBuffer(const std::vector<Vertex> &vertices) {
