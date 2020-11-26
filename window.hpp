@@ -4,8 +4,7 @@
 
 #ifndef CGLABS__WINDOW_HPP_
 #define CGLABS__WINDOW_HPP_
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
 
 #include <utility>
 #include <iostream>
@@ -28,7 +27,6 @@ class Window {
   explicit Window(glm::vec2 size, std::string _title = "UNSET ") {
 	/* Initialize the library */
 	if (!glfwInit()) {
-	  spdlog::critical("Application::Failed to init GLFW");
 	  throw std::runtime_error("Failed to init GLFW");
 	}
 	title = std::move(_title);
@@ -39,7 +37,9 @@ class Window {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
 
-	spdlog::debug("GLFW Init - OK");
+	if(!isWindows()){
+	    spdlog::debug("GLFW Init - OK");
+	}
 	/* Create a windowed mode window and its OpenGL context */
 	glWindow = glfwCreateWindow(size.x, size.y, "Hello World", nullptr, nullptr);
 	if (!glWindow) {
