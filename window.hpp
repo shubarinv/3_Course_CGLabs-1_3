@@ -37,6 +37,7 @@ class Window {
 	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
+
 	spdlog::debug("GLFW Init - OK");
 	/* Create a windowed mode window and its OpenGL context */
 	glWindow = glfwCreateWindow(size.x, size.y, "Hello World", nullptr, nullptr);
@@ -46,7 +47,8 @@ class Window {
 	  throw std::runtime_error("Failed to create window");
 	}
 	spdlog::debug("Window created successfully");
-
+// hide cursor
+//	glfwSetInputMode(glWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	/* Make the window's context current */
 	glfwMakeContextCurrent(glWindow);
 	GLenum err = glewInit();
@@ -62,6 +64,7 @@ class Window {
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTotalTextures);
 	spdlog::info("Number of textures that can be accessed by the fragment shader: {}", maxShaderTextures);
 	spdlog::info("Total number of textures that can be used {}", maxTotalTextures);
+	glEnable(GL_MULTISAMPLE);
   }
   [[maybe_unused]] void updateFpsCounter() {
 	static double previous_seconds = glfwGetTime();

@@ -18,5 +18,5 @@ add_executable(cgLabs renderer.hpp Buffers/vertex_buffer.hpp Buffers/index_buffe
         lib.hpp window.hpp Buffers/color_buffer.hpp Buffers/buffer.hpp Lab4.cpp object.hpp Shapes/cone.hpp Shapes/cylinder.hpp
         Libs/lodepng.hpp Libs/lodepng.cpp texture.hpp)
 #        lib.hpp window.hpp color_buffer.hpp buffer.hpp Lab2.cpp)
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw ${GLFW_LIBRARIES}GLEW::GLEW ${GLM_LIBRARIES}
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw ${GLFW3_LIBRARIES}GLEW::GLEW ${GLM_LIBRARIES}
         spdlog::spdlog)

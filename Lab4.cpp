@@ -12,7 +12,7 @@ int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
   spdlog::info("Keyboard callback");
-  if ((key == GLFW_KEY_Q && action == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 	spdlog::info("Got quit command, destroying window");
 	glfwDestroyWindow(window);
 	spdlog::info("Quiting...");
@@ -40,8 +40,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   glCall(glEnable(GL_BLEND));
+  glCall(glEnable(GL_CULL_FACE));
+  glCall(glEnable(GL_MULTISAMPLE));
+  glCall(glEnable(GL_DEPTH_TEST));
+  glCall(glDepthFunc(GL_LESS));
 
-  Texture test("../resources/textures/noTex.png");
+  Texture test("../resources/textures/Unknown.png");
   test.bind();
   tShader.bind();
   tShader.setUniform1i("u_Texture", 0);
@@ -77,7 +81,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   VertexArray va;
   VertexBuffer vb(positions, 8 * 3 * sizeof(float));
-  VertexBuffer vbTex(texCoords, 3 * 4 * sizeof(float));
+  VertexBuffer vbTex(texCoords, 3 * 3 * 5 * sizeof(float));
   VertexBufferLayout layout;
   layout.push<float>(3);
   va.addBuffer(vb, layout);
@@ -110,7 +114,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	window.updateFpsCounter();
 	Renderer::clear();
 
-	model = glm::rotate(model, 0.006f, {1, 1, 1});
+	model = glm::rotate(model, 0.006f, {1, 0, 0});
 	MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	tShader.setUniformMat4f("u_MVP", MVPmatrix);
 	Renderer::draw(&va, &ib, &tShader);
