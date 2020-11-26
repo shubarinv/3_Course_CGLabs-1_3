@@ -11,24 +11,24 @@
   x;               \
   ASSERT(glLogCall(#x, __FILE__, __LINE__))
 
-
-
 #if defined (__APPLE__)
 #define GL_SILENCE_DEPRECATION
 #include <spdlog/spdlog.h>
 #endif
+#if defined (__WIN32__)
+#include "spdlogDummy.hpp"
+#endif
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 
 bool isWindows() {
 #if defined (__WIN32__)
-    return true;
+  return true;
 #endif
-    return false;
+  return false;
 }
 bool isMac() {
 #if defined (__APPLE__)
@@ -46,7 +46,7 @@ bool isLinux() {
 
 bool glLogCall(const char *function, const char *file, int line) {
   while (GLenum error = glGetError()) {
-	//spdlog::error("OpenGL error: {} in file {} in function {} at line {}", gluErrorString(error), file, function, line);
+	spdlog::error("OpenGL error: {} in file {} in function {} at line {}", (error), file, function, line);
   }
   return true;
 }

@@ -21,6 +21,7 @@ if (WIN32)
 endif ()
 if (APPLE)
     find_package(GLM REQUIRED)
+    find_package(spdlog REQUIRED)
     find_package(GLFW3 REQUIRED)
 endif ()
 
@@ -30,7 +31,7 @@ add_executable(cgLabs Libs/glad/src/glad.c renderer.hpp Buffers/vertex_buffer.hp
         Buffers/vertex_array.hpp
         Buffers/vertex_buffer_layout.hpp shader.hpp vertex.hpp
         lib.hpp window.hpp Buffers/color_buffer.hpp Buffers/buffer.hpp Lab4.cpp object.hpp Shapes/cone.hpp Shapes/cylinder.hpp
-        Libs/lodepng.hpp Libs/lodepng.cpp texture.hpp)
+        Libs/lodepng.hpp Libs/lodepng.cpp texture.hpp spdlogDummy.hpp)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw3 ${GLFW_LIBRARIES} ${GLM_LIBRARIES} )

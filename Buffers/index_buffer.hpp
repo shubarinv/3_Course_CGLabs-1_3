@@ -5,6 +5,7 @@
 #ifndef CGLABS__INDEX_BUFFER_HPP_
 #define CGLABS__INDEX_BUFFER_HPP_
 
+#include <vector>
 #include "../vertex.hpp"
 #include "buffer.hpp"
 #include "../lib.hpp"
