@@ -4,6 +4,8 @@
 
 #ifndef CGLABS__SPDLOGDUMMY_HPP_
 #define CGLABS__SPDLOGDUMMY_HPP_
+
+// THIS FILE IS USED TO REPLACE SPDLOG_LIB ON WINDOWS
 namespace spdlog {
 
 template<typename FormatString, typename... Args>

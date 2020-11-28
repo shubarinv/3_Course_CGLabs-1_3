@@ -12,18 +12,29 @@
 #include "lib.hpp"
 
 class Window {
-  GLFWwindow* glWindow;
-  std::string title;
+  GLFWwindow* glWindow; ///< @brief reference to GLFW window
+  std::string title; ///< @brief window title
 
  public:
+  /**
+   * @brief Destroys window
+   */
   void destroy() {
 	glfwDestroyWindow(glWindow);
 	glfwTerminate();
   }
+
+  /**
+   * @returns returns true if window should be closed
+   */
   [[maybe_unused]] bool getShouldClose() {
 	return glfwWindowShouldClose(glWindow);
   }
 
+  /**
+   * @param size window size
+   * @param _title window title
+   */
   explicit Window(glm::vec2 size, std::string _title = "UNSET ") {
 	/* Initialize the library */
 	if (!glfwInit()) {
@@ -69,6 +80,10 @@ class Window {
 	spdlog::info("Total number of textures that can be used {}", maxTotalTextures);
 	glEnable(GL_MULTISAMPLE);
   }
+
+  /**
+   * @brief updates fps count in window title
+   */
   [[maybe_unused]] void updateFpsCounter() {
 	static double previous_seconds = glfwGetTime();
 	static int frame_count;
