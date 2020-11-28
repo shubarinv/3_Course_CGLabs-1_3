@@ -11,12 +11,20 @@
 #include <unordered_map>
 
 class Shader {
+
+  /**
+   * @brief contains code for vertex and fragment shader
+   */
   struct ShaderProgramSource {
-	std::string vertexShader{};
-	std::string fragmentShader{};
+	std::string vertexShader{}; ///< @brief program for vertex shader
+	std::string fragmentShader{}; ///< @brief program for fragment shader
   };
 
  public:
+  /**
+   * @brief
+   * @param _filepath path to file containing shader source code
+   */
   explicit Shader(const std::string &_filepath) {
 	filepath   = _filepath;
 	source     = parseShader();
@@ -27,26 +35,49 @@ class Shader {
 	glCall(glDeleteProgram(rendererID));
 	spdlog::info("destroyed shader with id: {}", rendererID);
   }
+  /**
+   * @brief Activates shader.
+   */
   [[maybe_unused]] void bind() const {
 	glCall(glUseProgram(rendererID));
   }
   [[maybe_unused]] static void unbind() {
 	glCall(glUseProgram(0));
   }
+  /**
+   * @brief Sets uniform of 1 value with type int in shader
+   * @param name name of the uniform
+   * @param value value to set uniform to
+   */
   void setUniform1i(const std::string &name, GLint value) {
 	glCall(glUniform1i(getUniformLocation(name), value));
   }
+  /**
+   * @brief Sets uniform with vec4
+   * @param name name of the uniform
+   * @param value value to set uniform to
+   */
   void setUniform4f(const std::string &name, glm::vec4 vec4) {
 	glCall(glUniform4f(getUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w));
   }
+  /**
+  * @brief Sets uniform with mat4
+  * @param name name of the uniform
+  * @param value value to set uniform to
+  */
   void setUniformMat4f(const std::string &name, const glm::mat4 &matrix) {
 	glCall(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
   }
 
  private:
   ShaderProgramSource source;
-  std::unordered_map<std::string, int> uniformLocationCache;
+  std::unordered_map<std::string, int> uniformLocationCache; ///< cache of uniforms locations
 
+  /**
+   * @brief gets location of uniform in shader
+   * @param name name of uniform
+   * @returns location of uniform if successful else -1
+   */
   [[nodiscard]] GLint getUniformLocation(const std::string &name) {
 	if (uniformLocationCache.find(name) != uniformLocationCache.end()) {
 	  return uniformLocationCache[name];
@@ -61,6 +92,11 @@ class Shader {
   }
   unsigned int rendererID{};
   std::string filepath{};
+
+  /**
+   * @brief Parses file that contains the shader
+   * @returns source code for vertex and fragment shader.
+   */
   ShaderProgramSource parseShader() {
 	spdlog::info("Parsing shader at: {}", filepath.c_str());
 	std::ifstream stream(filepath);
@@ -86,6 +122,13 @@ class Shader {
 	spdlog::info("Shader parsed successfully");
 	return {ss[0].str(), ss[1].str()};
   }
+
+  /**
+   * @brief Compiles shader program
+   * @param type fragment or vertex
+   * @param source source code of shader program
+   * @return returns reference to compiled shader program
+   */
   static unsigned int compileShader(int type, std::string &source) {
 	spdlog::info("Trying to compile {}", (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader "));
 	unsigned int id = glCreateShader(type);
@@ -111,17 +154,22 @@ class Shader {
 	spdlog::info("shader compiled successfully");
 	return id;
   }
+
+/**
+ * @brief Creates shader that can be used
+ * @return reference to final shader program
+ */
   unsigned int createShader() {
 	unsigned int program = glCreateProgram();
 	unsigned int vShader = compileShader(GL_VERTEX_SHADER, source.vertexShader);
 	unsigned int fShader = compileShader(GL_FRAGMENT_SHADER, source.fragmentShader);
-	glAttachShader(program, vShader);
-	glAttachShader(program, fShader);
-	glLinkProgram(program);
-	glValidateProgram(program);
+	glCall(glAttachShader(program, vShader));
+	glCall(glAttachShader(program, fShader));
+	glCall(glLinkProgram(program));
+	glCall(glValidateProgram(program));
 
-	glDeleteShader(vShader);
-	glDeleteShader(fShader);
+	glCall(glDeleteShader(vShader));
+	glCall(glDeleteShader(fShader));
 
 	return program;
   }
