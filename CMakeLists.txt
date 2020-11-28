@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
 project(cgLabs)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+if (WIN32)
+    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+endif ()
 
 set(CMAKE_CXX_STANDARD 20)
 
