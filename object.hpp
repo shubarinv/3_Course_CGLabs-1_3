@@ -77,7 +77,7 @@ class Object {
 
   /**
    * @brief Allows you to set VertexBuffer by raw data and its size.
-   * @param data array containing vertices data
+   * @param data reference to data
    * @param size of data
    * @example float vertices[]{0,1,0,0.1,0.2}; obj.setVertexBuffer(&vertices,sizeof(vertices));
    **/
@@ -88,7 +88,6 @@ class Object {
   /**
    * @brief Allows you to set VertexBuffer by passing a vector of Vertex.
    * @param vertices vector of vertices
-   * @example float vertices[]{0,1,0,0.1,0.2}; obj.setVertexBuffer(&vertices,sizeof(vertices));
    **/
   [[maybe_unused]] void setVertexBuffer(const std::vector<Vertex> &vertices) {
 	colorBuffer = new ColorBuffer(vertices);
