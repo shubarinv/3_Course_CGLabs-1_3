@@ -12,6 +12,11 @@
 class IndexBuffer : public Buffer {
  private:
   unsigned int length{};
+  std::vector<unsigned int> indices;
+ public:
+  [[nodiscard]] const std::vector<unsigned int> &getIndices() const {
+	return indices;
+  }
 
  public:
   [[nodiscard]] unsigned int getLength() const {
@@ -19,43 +24,48 @@ class IndexBuffer : public Buffer {
   }
 
  public:
-  explicit IndexBuffer(std::vector<unsigned int> indices) {
+  explicit IndexBuffer(std::vector<unsigned int> _indices) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
-	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
-	length = indices.size();
+	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int), _indices.data(), GL_STATIC_DRAW));
+	length = _indices.size();
+	indices = _indices;
+
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
-  explicit IndexBuffer(const void *data, unsigned int size) {
+  [[deprecated]][[maybe_unused]] explicit IndexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), data, GL_STATIC_DRAW));
 	length = size;
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
-  explicit IndexBuffer(const std::vector<Vertex> &vertices) {
-	std::vector<unsigned int> indices;
+  explicit IndexBuffer(const std::vector<Vertex> &vertices, bool quads = true) {
+	std::vector<unsigned int> _indices;
 
 	for (unsigned int i = 0; i < vertices.size(); i++) {
 
-	  indices.push_back(i);
+	  _indices.push_back(i);
 
-	  if (indices.size() % 3 == 0) {
-		indices.push_back(i);
+	  if (_indices.size() % 3 == 0) {
+		_indices.push_back(i);
 	  }
 	}
-	for (unsigned int i = 1; i < vertices.size(); i++) {
+	if (quads) {
+	  for (unsigned int i = 1; i < vertices.size(); i++) {
 
-	  indices.push_back(i);
+		_indices.push_back(i);
 
-	  if (indices.size() % 3 == 0) {
-		indices.push_back(i);
+		if (_indices.size() % 3 == 0) {
+		  _indices.push_back(i);
+		}
 	  }
 	}
+	indices = _indices;
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
-	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW));
-	length = indices.size();
+	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int), _indices.data(), GL_STATIC_DRAW));
+	length = _indices.size();
 	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
   }
   ~IndexBuffer() {

@@ -10,18 +10,21 @@
 #include "Buffers/index_buffer.hpp"
 #include "renderer.hpp"
 #include "Buffers/color_buffer.hpp"
+#include "texture.hpp"
 
 class Object {
  protected:
-  glm::vec3 color{}; ///< @brief If you are not planning to use texture, you can set obj color
+  glm::vec3 color{}; ///< @brief If you are not planning to use texture, you can set obj color.
   IndexBuffer *indexBuffer{}; ///< @brief Holds in which order should vertices be drawn.
-  VertexBuffer *vertexBuffer{}; ///< @brief Holds data about vertices location
-  VertexArray *vertexArray{}; ///< @brief Holds all data about vertices (Location, Color/Texture, order)
-  ColorBuffer *colorBuffer{}; ///<@brief Holds data about vertices colors
+  VertexBuffer *vertexBuffer{}; ///< @brief Holds data about vertices location.
+  VertexArray *vertexArray{}; ///< @brief Holds all data about vertices (Location, Color/Texture, order).
+  ColorBuffer *colorBuffer{}; ///< @brief Holds data about vertices colors.
+  Texture *texture{}; /// @brief Holds data about texture.
   VertexBufferLayout *bufferLayout{}; ///<@brief Specifies amount of params per each vertex and their type.
-  unsigned int layoutLength{3}; ///<@brief Specifies amount of params per each vertex
-  int timesToPushLayout = {1}; ///@brief corresponds with amount of layouts shader has
+  unsigned int layoutLength{3}; ///<@brief Specifies amount of params per each vertex.
+  int timesToPushLayout = {1}; ///@brief corresponds with amount of layouts shader has.
   bool bInitialized{false};
+  bool bOptimized{true}; ///< @Whether vertices are being reused or not.
  public:
   /**
    * @brief returns current contents of indexBuffer
@@ -108,8 +111,6 @@ class Object {
 	timesToPushLayout = times;
   }
 
-//todo  void setColorBuffer(const std::vector<glm::vec3> &_colors) {}
-
 /**
  * @brief Sets colorBuffer with data from vector of Vertices
  * @param _verticesWithColors  vector of Vertices that have defined colors
@@ -125,6 +126,29 @@ class Object {
 	color = _color;
   }
 
+  void setTexture(std::string _filepathToTexture) {
+	texture = new Texture(std::move(_filepathToTexture));
+	if (bOptimized) {
+	  complicate();
+	}
+  }
+
+  void complicate() {
+	if (vertexBuffer == nullptr)throw std::runtime_error("VertexBuffer is null, set it before setting texture");
+	if (indexBuffer == nullptr)throw std::runtime_error("IndexBuffer is null, set it before setting texture");
+	std::vector<Vertex> tmp;
+	for (int i = 0; i < indexBuffer->getLength(); i++) {
+	  tmp.push_back(vertexBuffer->getVertices()[indexBuffer->getIndices()[i]]);
+	}
+	setVertexBuffer(tmp);
+	bOptimized = false;
+	std::vector<unsigned int> indices;
+	for (unsigned int i = 0; i < tmp.size(); i++) {
+	  indices.push_back(i);
+	}
+	setIndexBuffer(indices);
+  }
+
   Object() {
 	bInitialized = false;
   }
@@ -135,16 +159,31 @@ class Object {
 	if (vertexBuffer == nullptr) {
 	  throw std::runtime_error("Object init failed");
 	}
-	bufferLayout = new VertexBufferLayout();
-	for (int i = 0; i < timesToPushLayout; i++) {
-	  bufferLayout->push<float>(layoutLength);
-	}
-	vertexArray = new VertexArray();
-	vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
-	if (colorBuffer != nullptr) {
-	  vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	if (texture == nullptr) {
+	  bufferLayout = new VertexBufferLayout();
+	  for (int i = 0; i < timesToPushLayout; i++) {
+		bufferLayout->push<float>(layoutLength);
+	  }
+	  vertexArray = new VertexArray();
+	  vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
+	  if (colorBuffer != nullptr) {
+		vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	  }
+	} else {
+	  auto *verticesLayout = new VertexBufferLayout();
+	  auto *textureCoordsLayout = new VertexBufferLayout();
+	  verticesLayout->push<float>(3);
+	  textureCoordsLayout->push<float>(2);
+	  vertexArray = new VertexArray();
+	  vertexArray->addBuffer(*vertexBuffer, *verticesLayout);
+	  auto texCoords = texture->generateTextureCoords(indexBuffer->getLength());
+	  auto *textureVertexBuffer = new VertexBuffer(texCoords.data(), texCoords.size() * sizeof(float));
+	  vertexArray->addBuffer(*textureVertexBuffer, *textureCoordsLayout, 1);
 	}
 	bInitialized = true;
+  }
+  void draw() {
+	if (texture != nullptr) texture->bind();
   }
 
 };
