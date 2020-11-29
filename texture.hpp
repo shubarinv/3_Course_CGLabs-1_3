@@ -50,6 +50,27 @@ class Texture : public Buffer {
 	}
 	spdlog::info("Texture loaded successfully!");
   }
+
+  std::vector<float> generateTextureCoords(unsigned int size) {
+	float texCoordsPreset[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f};
+	std::vector<float> textureCoords;
+	short presetNum{0};
+	for (int i = 0; i < size; i++) {
+	  if (presetNum > 11)presetNum = 0;
+	  textureCoords.push_back(texCoordsPreset[presetNum]);
+	  textureCoords.push_back(texCoordsPreset[presetNum + 1]);
+	  presetNum += 2;
+	}
+
+	return textureCoords;
+  }
 };
 
 #endif //CGLABS__TEXTURE_HPP_
