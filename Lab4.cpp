@@ -8,7 +8,7 @@
 #include "shader.hpp"
 #include "renderer.hpp"
 #include "texture.hpp"
-#include "c_map_texture.hpp"
+#include "obj_loader.hpp"
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
@@ -59,52 +59,23 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 
-  Object testObj;
-
-  testObj.setVertexBuffer({
-							  Vertex({-1.0, -1.0, 1.0,}),
-							  Vertex({-1.0, 1.0, 1.0,}),
-							  Vertex({1.0, 1.0, 1.0,}),
-							  Vertex({1.0, -1.0, 1.0,}),
-							  Vertex({-1.0, -1.0, -1.0,}),
-							  Vertex({-1.0, 1.0, -1.0,}),
-							  Vertex({1.0, 1.0, -1.0,}),
-							  Vertex({1.0, -1.0, -1.0,}),
-						  });
-  testObj.setIndexBuffer({
-							 0, 1, 2,
-							 2, 3, 0,
-							 // right
-							 1, 5, 6,
-							 6, 2, 1,
-							 // back
-							 7, 6, 5,
-							 5, 4, 7,
-							 // left
-							 4, 0, 3,
-							 3, 7, 4,
-							 // bottom
-							 4, 5, 1,
-							 1, 0, 4,
-							 // top
-							 3, 2, 6,
-							 6, 7, 3});
-
-  testObj.setTexture("../resources/textures/wood.png");
-  testObj.init();
-  tShader.setUniform1i("u_Texture", 0);
-
-  glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-
+  auto objloader = new objLoader();
+   auto loadedObj=VertexBuffer::floatToVertex(objloader->loadObj("../resources/objects/cube.obj"));
+  auto object = new Object();
+  object->setVertexBuffer(loadedObj);
+  object->setIndexBuffer(loadedObj);
+  object->setTexCoords(objloader->attrib.texcoords);
+  //object->setOptimized(false);
+  object->setTexture("../resources/textures/wood.png");
+  object->init();
   tShader.setUniformMat4f("u_MVP", MVPmatrix);
+  glfwSetKeyCallback(window.getWindow(), handleKeyboard);
   while (!glfwWindowShouldClose(window.getWindow())) {
-	model = glm::rotate(model, 0.006f, {0, 1, 1});
-	glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-	tShader.setUniformMat4f("u_MVP", MVPmatrix);
+
 	window.updateFpsCounter();
 	Renderer::clear();
 
-	Renderer::draw(&testObj, &tShader);
+	Renderer::draw(object,&tShader);
 	switch (selected_optionY) {
 	  case 0: glCall(glDisable(GL_DEPTH_TEST));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));

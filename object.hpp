@@ -20,11 +20,22 @@ class Object {
   VertexArray *vertexArray{}; ///< @brief Holds all data about vertices (Location, Color/Texture, order).
   ColorBuffer *colorBuffer{}; ///< @brief Holds data about vertices colors.
   Texture *texture{}; /// @brief Holds data about texture.
+  std::vector<float> texCoords{};
+ public:
+  void setTexCoords(const std::vector<float> &tex_coords) {
+	texCoords = tex_coords;
+  }
+ protected:
   VertexBufferLayout *bufferLayout{}; ///<@brief Specifies amount of params per each vertex and their type.
   unsigned int layoutLength{3}; ///<@brief Specifies amount of params per each vertex.
   int timesToPushLayout = {1}; ///@brief corresponds with amount of layouts shader has.
   bool bInitialized{false};
-  bool bOptimized{true}; ///< @Whether vertices are being reused or not.
+  bool bOptimized{true};
+ public:
+  void setOptimized(bool b_optimized) {
+	bOptimized = b_optimized;
+  }
+  ///< @Whether vertices are being reused or not.
  public:
   /**
    * @brief returns current contents of indexBuffer
@@ -67,8 +78,8 @@ class Object {
    * drawing triangles.
    * @param _vertices vector of Vertex.
    **/
-  [[maybe_unused]] void setIndexBuffer(const std::vector<Vertex> &_vertices) {
-	indexBuffer = new IndexBuffer(_vertices);
+  [[maybe_unused]] void setIndexBuffer(const std::vector<Vertex> &_vertices,bool quads=true) {
+	indexBuffer = new IndexBuffer(_vertices,quads);
   }
   /**
   * @brief Allows you to set VertexBuffer by passing another VertexBuffer.
@@ -176,7 +187,9 @@ class Object {
 	  textureCoordsLayout->push<float>(2);
 	  vertexArray = new VertexArray();
 	  vertexArray->addBuffer(*vertexBuffer, *verticesLayout);
-	  auto texCoords = texture->generateTextureCoords(indexBuffer->getLength());
+	  if (texCoords.empty()) {
+		texCoords = texture->generateTextureCoords(indexBuffer->getLength());
+	  }
 	  auto *textureVertexBuffer = new VertexBuffer(texCoords.data(), texCoords.size() * sizeof(float));
 	  vertexArray->addBuffer(*textureVertexBuffer, *textureCoordsLayout, 1);
 	}
