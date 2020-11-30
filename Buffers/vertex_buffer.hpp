@@ -49,6 +49,14 @@ class VertexBuffer : public Buffer {
   [[maybe_unused]] static void unbind() {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
   }
+
+  static std::vector<Vertex> floatToVertex(std::vector<float> vertices){
+    std::vector<Vertex> tmp;
+    for (unsigned int i = 0; i < vertices.size(); i+=3){
+      tmp.push_back(Vertex({vertices[i],vertices[i+1],vertices[i+2]}));
+    }
+    return tmp;
+  }
 };
 
 #endif//CGLABS__VERTEX_BUFFER_HPP_
