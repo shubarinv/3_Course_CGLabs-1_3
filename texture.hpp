@@ -12,7 +12,7 @@ class Texture : public Buffer {
   unsigned int rendererID{};
   std::string filepath{};
   std::vector<unsigned char> localBuffer{};
-  unsigned int width{0}, height{0}, bitsPerPixel{0};
+  unsigned int width{0}, height{0};
  public:
   explicit Texture(std::string _filepath) {
 	filepath = std::move(_filepath);
@@ -24,6 +24,7 @@ class Texture : public Buffer {
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	glCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
+	glCall(glGenerateMipmap(GL_TEXTURE_2D));
 	glCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, localBuffer.data()));
 	unbind();
   }
@@ -48,6 +49,27 @@ class Texture : public Buffer {
 	  throw;
 	}
 	spdlog::info("Texture loaded successfully!");
+  }
+
+  std::vector<float> generateTextureCoords(unsigned int size) {
+	float texCoordsPreset[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f};
+	std::vector<float> textureCoords;
+	short presetNum{0};
+	for (int i = 0; i < size; i++) {
+	  if (presetNum > 11)presetNum = 0;
+	  textureCoords.push_back(texCoordsPreset[presetNum]);
+	  textureCoords.push_back(texCoordsPreset[presetNum + 1]);
+	  presetNum += 2;
+	}
+
+	return textureCoords;
   }
 };
 
