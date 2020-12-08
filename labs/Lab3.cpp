@@ -7,15 +7,15 @@
 #include <cmath>
 #include <random>
 
-#include "Buffers/color_buffer.hpp"
-#include "Buffers/index_buffer.hpp"
-#include "renderer.hpp"
-#include "shader.hpp"
-#include "vertex.hpp"
-#include "Buffers/vertex_array.hpp"
-#include "window.hpp"
-#include "Shapes/cone.hpp"
-#include "Shapes/cylinder.hpp"
+#include "../Buffers/color_buffer.hpp"
+#include "../Buffers/index_buffer.hpp"
+#include "../renderer.hpp"
+#include "../shader.hpp"
+#include "../vertex.hpp"
+#include "../Buffers/vertex_array.hpp"
+#include "../window.hpp"
+#include "../Shapes/cone.hpp"
+#include "../Shapes/cylinder.hpp"
 
 int selected_optionX = 0;
 int selected_optionY = 0;

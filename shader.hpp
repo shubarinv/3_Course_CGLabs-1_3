@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include "functions.hpp"
 
 class Shader {
 
@@ -26,14 +27,14 @@ class Shader {
    * @param _filepath path to file containing shader source code
    */
   explicit Shader(const std::string &_filepath) {
-	filepath   = _filepath;
-	source     = parseShader();
+	filepath = _filepath;
+	source = parseShader();
 	rendererID = createShader();
-	spdlog::info("Created shader with id: {}", rendererID);
+	PLOGV << "Created shader with id: " << rendererID;
   }
   ~Shader() {
 	glCall(glDeleteProgram(rendererID));
-	spdlog::info("destroyed shader with id: {}", rendererID);
+	PLOGV << "destroyed shader with id: " << rendererID;
   }
   /**
    * @brief Activates shader.
@@ -84,7 +85,7 @@ class Shader {
 	}
 	glCall(int location = glGetUniformLocation(rendererID, name.c_str()));
 	if (location == -1) {
-	  spdlog::warn("Uniform with name {} does not exist", name);
+	  PLOGW << "Uniform with name: " << name << " does not exist";
 	}
 
 	uniformLocationCache[name] = location;
@@ -98,13 +99,17 @@ class Shader {
    * @returns source code for vertex and fragment shader.
    */
   ShaderProgramSource parseShader() {
-	spdlog::info("Parsing shader at: {}", filepath.c_str());
+	PLOGV << "Parsing shader at: " << filepath.c_str();
 	std::ifstream stream(filepath);
+	if (stream.fail()) {
+	  PLOGF << "Unable to open shader file at: " << filepath.c_str();
+	  throw std::runtime_error("Unable to open shader file");
+	}
 	std::string line;
 	std::stringstream ss[2];
 	enum class shaderType {
-	  NONE     = -1,
-	  VERTEX   = 0,
+	  NONE = -1,
+	  VERTEX = 0,
 	  FRAGMENT = 1
 	};
 	shaderType type = shaderType::NONE;
@@ -119,7 +124,7 @@ class Shader {
 		ss[(int)type] << line << "\n";
 	  }
 	}
-	spdlog::info("Shader parsed successfully");
+	PLOGV << "Shader parsed successfully";
 	return {ss[0].str(), ss[1].str()};
   }
 
@@ -130,7 +135,7 @@ class Shader {
    * @return returns reference to compiled shader program
    */
   static unsigned int compileShader(int type, std::string &source) {
-	spdlog::info("Trying to compile {}", (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader "));
+	PLOGV << "Trying to compile " << (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader ");
 	unsigned int id = glCreateShader(type);
 	const char *src = source.c_str();
 	glShaderSource(id, 1, &src, nullptr);
@@ -147,11 +152,11 @@ class Shader {
 	  error += (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader ");
 	  error += buf;
 	  glGetShaderInfoLog(id, length, &length, buf);
-	  spdlog::critical(error);
+	  PLOGF << error;
 	  throw std::runtime_error(error);
 	  glDeleteShader(id);
 	}
-	spdlog::info("shader compiled successfully");
+	PLOGV << "shader compiled successfully";
 	return id;
   }
 

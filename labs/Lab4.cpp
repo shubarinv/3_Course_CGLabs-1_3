@@ -4,11 +4,11 @@
 
 #define GL_SILENCE_DEPRECATION
 
-#include "window.hpp"
-#include "shader.hpp"
-#include "renderer.hpp"
-#include "texture.hpp"
-#include "c_map_texture.hpp"
+#include "../window.hpp"
+#include "../shader.hpp"
+#include "../renderer.hpp"
+#include "../texture.hpp"
+#include "../c_map_texture.hpp"
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {

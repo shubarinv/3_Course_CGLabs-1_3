@@ -37,10 +37,6 @@ class Vertex {
    * @param _newPosition new position for the vertex
    */
   void setPosition(glm::vec3 _newPosition) {
-	if (_newPosition.x < -1 || _newPosition.x > 1 || _newPosition.y < -1 || _newPosition.y > 1 || _newPosition.z < -1 || _newPosition.z > 1) {
-	  spdlog::error("Invalid location!");
-	  throw std::runtime_error("Invalid location for vertex");
-	}
 	position = _newPosition;
   }
   /**
@@ -49,7 +45,7 @@ class Vertex {
    */
   void setColor(glm::vec3 _color) {
 	if (_color.x < -1 || _color.x > 1 || _color.y < -1 || _color.y > 1 || _color.z < -1 || _color.z > 1) {
-	  spdlog::error("Invalid color!");
+	  PLOGE << "Invalid color!";
 	}
 	color = _color;
   }

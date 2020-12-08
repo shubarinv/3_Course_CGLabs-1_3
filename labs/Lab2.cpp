@@ -3,14 +3,14 @@
 
 #include <random>
 
-#include "Buffers/color_buffer.hpp"
-#include "Buffers/index_buffer.hpp"
-#include "renderer.hpp"
-#include "shader.hpp"
-#include "vertex.hpp"
-#include "Buffers/vertex_array.hpp"
-#include "Buffers/vertex_buffer.hpp"
-#include "window.hpp"
+#include "../Buffers/color_buffer.hpp"
+#include "../Buffers/index_buffer.hpp"
+#include "../renderer.hpp"
+#include "../shader.hpp"
+#include "../vertex.hpp"
+#include "../Buffers/vertex_array.hpp"
+#include "../Buffers/vertex_buffer.hpp"
+#include "../window.hpp"
 
 template<typename Numeric, typename Generator = std::mt19937>
 Numeric random(Numeric from, Numeric to) {

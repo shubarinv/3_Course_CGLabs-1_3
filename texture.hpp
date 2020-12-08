@@ -6,7 +6,7 @@
 #define CGLABS__TEXTURE_HPP_
 #include <utility>
 #include "Libs/lodepng.hpp"
-#include "lib.hpp"
+#include "functions.hpp"
 class Texture : public Buffer {
  private:
   unsigned int rendererID{};
@@ -45,10 +45,10 @@ class Texture : public Buffer {
 	unsigned error = lodepng::decode(localBuffer, width, height, filepath);
 	// If there's an error, display it.
 	if (error != 0) {
-	  spdlog::error("Texture load error {}: {}", error, lodepng_error_text(error));
+	  PLOGV << "Texture load error" << error << " : " << lodepng_error_text(error);
 	  throw;
 	}
-	spdlog::info("Texture loaded successfully!");
+	PLOGV << "Texture loaded successfully!";
   }
 
   std::vector<float> generateTextureCoords(unsigned int size) {

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "buffer.hpp"
-#include "../lib.hpp"
+#include "../functions.hpp"
 #include "../vertex.hpp"
 class ColorBuffer : public Buffer {
 
@@ -23,12 +23,12 @@ class ColorBuffer : public Buffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW));
-	spdlog::info("ColorBuffer created, rendererID: {}", rendererID);
+	PLOGV << "ColorBuffer created rendererID: " << rendererID;
   }
 
   ~ColorBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	spdlog::info("ColorBuffer destroyed rendererID: {}", rendererID);
+	PLOGV << "ColorBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
