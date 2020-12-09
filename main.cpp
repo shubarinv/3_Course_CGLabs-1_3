@@ -15,8 +15,7 @@ int main(int argc, char *argv[]) {
   Application app;
   app.init();
   Application::setOpenGLFlags();
-  app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
-  glfwSetWindowUserPointer(app.getWindow()->getGLFWWindow(), &app);
+
 
   while (!app.shouldClose) {
 	glClear(GL_COLOR_BUFFER_BIT);

@@ -34,7 +34,7 @@ set(EXEC_BASE renderer.hpp Buffers/vertex_buffer.hpp Buffers/index_buffer.hpp #A
         Buffers/vertex_buffer_layout.hpp shader.hpp vertex.hpp
         functions.hpp window.hpp Buffers/color_buffer.hpp Buffers/buffer.hpp object.hpp Shapes/cone.hpp Shapes/cylinder.hpp
         texture.hpp c_map_texture.hpp)
-add_executable(${PROJECT_NAME} ${EXEC_LIBS} ${EXEC_BASE} main.cpp)
+add_executable(${PROJECT_NAME} ${EXEC_LIBS} ${EXEC_BASE} labs/lab4.cpp)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw3 ${GLFW_LIBRARIES} ${GLM_LIBRARIES})

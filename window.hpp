@@ -13,7 +13,7 @@ class Window {
 	return window;
   }
  public:
-  Window() {
+  Window(glm::vec2 size) {
 	glfwSetErrorCallback(glfwErrorHandler);
 	if (!glfwInit()) {
 	  PLOGF << "GLFW INIT FAILED";
@@ -29,7 +29,7 @@ class Window {
 	  PLOGV << "System: MacOS";
 	}
 
-	window = glfwCreateWindow(800, 600, "UNSET", nullptr, nullptr);
+	window = glfwCreateWindow(size.x, size.y, "UNSET", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	if (window == nullptr) {
 	  PLOGF << "GLFW was unable to create window";

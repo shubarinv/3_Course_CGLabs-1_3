@@ -8,32 +8,48 @@
 #include "../shader.hpp"
 #include "../renderer.hpp"
 #include "../texture.hpp"
-#include "../c_map_texture.hpp"
+#include "../application.hpp"
 int selected_optionX = 0;
 int selected_optionY = 0;
-void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
-  spdlog::info("Keyboard callback");
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-	spdlog::info("Got quit command, destroying window");
-	glfwDestroyWindow(window);
-	spdlog::info("Quiting...");
-	glfwTerminate();
-	exit(0);
+void programQuit(int key, int action, Application *app) {
+  app->close();
+  PLOGV << "Quiting...";
+}
+void changeDrawMode(int key, int action, [[maybe_unused]] Application *app) {
+  if (action == GLFW_PRESS) {
+	if (key == GLFW_KEY_UP) {
+	  selected_optionY--;
+	} else if (key == GLFW_KEY_DOWN) {
+	  selected_optionY++;
+	} else {
+	  PLOGE << "How the hell did we end up here?";
+	}
+	PLOGV << "Draw mode is now " << selected_optionY;
   }
-  if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
-	selected_optionY--;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
-  }
-  if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-
-	selected_optionY++;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
+}
+void changeTask(int key, int action, [[maybe_unused]] Application *app) {
+  if (action == GLFW_PRESS) {
+	if (key == GLFW_KEY_LEFT) {
+	  selected_optionX--;
+	} else if (key == GLFW_KEY_RIGHT) {
+	  selected_optionX++;
+	} else {
+	  PLOGE << "How the hell did we end up here?";
+	}
+	PLOGV << "Task is now " << selected_optionX;
   }
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  spdlog::info("App stated!");
-  Window window({800, 600});
+  Application app;
+  app.init();
+  app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
+  app.registerKeyCallback(GLFW_KEY_LEFT, changeTask);
+  app.registerKeyCallback(GLFW_KEY_RIGHT, changeTask);
+  app.registerKeyCallback(GLFW_KEY_UP, changeDrawMode);
+  app.registerKeyCallback(GLFW_KEY_DOWN, changeDrawMode);
+  Application::setOpenGLFlags();
+
   Shader tShader("../resources/shaders/basic_w_texture.glsl");
   glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   glCall(glEnable(GL_BLEND));
@@ -94,14 +110,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   testObj.init();
   tShader.setUniform1i("u_Texture", 0);
 
-  glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-
   tShader.setUniformMat4f("u_MVP", MVPmatrix);
-  while (!glfwWindowShouldClose(window.getWindow())) {
+  while (!app.shouldClose) {
 	model = glm::rotate(model, 0.006f, {0, 1, 1});
 	glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	tShader.setUniformMat4f("u_MVP", MVPmatrix);
-	window.updateFpsCounter();
 	Renderer::clear();
 
 	Renderer::draw(&testObj, &tShader);
@@ -126,13 +139,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  default: break;
 	}
 	/* Swap front and back buffers */
-	glfwSwapBuffers(window.getWindow());
+	glCall(glfwSwapBuffers(app.getWindow()->getGLFWWindow()));
 
 	/* Poll for and process events */
 	glfwPollEvents();
 
   }
-  window.destroy();
-  spdlog::info("Program finished");
+  glfwTerminate();
   return 0;
 }

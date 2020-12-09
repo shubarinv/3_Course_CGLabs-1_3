@@ -20,9 +20,11 @@ class Application {
   bool shouldClose{false};
   void init() {
 	logInit();
-	window = new Window;
+	window = new Window({800,600});
 	setOpenGLFlags();
 	glfwSetKeyCallback(window->getGLFWWindow(), keyCallback);
+
+	glfwSetWindowUserPointer(window->getGLFWWindow(), this);
   }
 
   void registerKeyCallback(int key, functionType func) {
