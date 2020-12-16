@@ -13,7 +13,7 @@ int selected_optionX = 0;
 int selected_optionY = 0;
 void programQuit(int key, int action, Application *app) {
   app->close();
-  PLOGV << "Quiting...";
+  LOG_S(INFO) << "Quiting...";
 }
 void changeDrawMode(int key, int action, [[maybe_unused]] Application *app) {
   if (action == GLFW_PRESS) {
@@ -22,9 +22,9 @@ void changeDrawMode(int key, int action, [[maybe_unused]] Application *app) {
 	} else if (key == GLFW_KEY_DOWN) {
 	  selected_optionY++;
 	} else {
-	  PLOGE << "How the hell did we end up here?";
+	  LOG_S(ERROR) << "How the hell did we end up here?";
 	}
-	PLOGV << "Draw mode is now " << selected_optionY;
+	LOG_S(INFO) << "Draw mode is now " << selected_optionY;
   }
 }
 void changeTask(int key, int action, [[maybe_unused]] Application *app) {
@@ -34,9 +34,9 @@ void changeTask(int key, int action, [[maybe_unused]] Application *app) {
 	} else if (key == GLFW_KEY_RIGHT) {
 	  selected_optionX++;
 	} else {
-	  PLOGE << "How the hell did we end up here?";
+	  LOG_S(ERROR) << "How the hell did we end up here?";
 	}
-	PLOGV << "Task is now " << selected_optionX;
+	LOG_S(INFO) << "Task is now " << selected_optionX;
   }
 }
 

@@ -29,19 +29,19 @@ class VertexBuffer : public Buffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW));
-	PLOGV << "VertexBuffer created rendererID: " << rendererID;
+	LOG_S(INFO) << "VertexBuffer created rendererID: " << rendererID;
   }
 
   [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-	PLOGV << "VertexBuffer created rendererID: " << rendererID;
+	LOG_S(INFO) << "VertexBuffer created rendererID: " << rendererID;
   }
 
   ~VertexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	PLOGV << "VertexBuffer destroyed rendererID: " << rendererID;
+	LOG_S(INFO) << "VertexBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "Buffers/index_buffer.hpp"
-#include "renderer.hpp"
 #include "Buffers/color_buffer.hpp"
 #include "texture.hpp"
 

@@ -2,76 +2,81 @@
 // Created by Vladimir Shubarin on 20.10.2020.
 //
 #define GL_SILENCE_DEPRECATION
-#include <spdlog/spdlog.h>
 
 #include <cmath>
 #include <random>
 
 #include "../Buffers/color_buffer.hpp"
 #include "../Buffers/index_buffer.hpp"
-#include "../renderer.hpp"
-#include "../shader.hpp"
-#include "../vertex.hpp"
 #include "../Buffers/vertex_array.hpp"
-#include "../window.hpp"
 #include "../Shapes/cone.hpp"
 #include "../Shapes/cylinder.hpp"
+#include "../application.hpp"
+#include "../renderer.hpp"
 
 int selected_optionX = 0;
 int selected_optionY = 0;
-void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
-  spdlog::info("Keyboard callback");
-  if ((key == GLFW_KEY_Q && action == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-	spdlog::info("Got quit command, destroying window");
-	glfwDestroyWindow(window);
-	spdlog::info("Quiting...");
-	glfwTerminate();
-	exit(0);
+void programQuit(int key, int action, Application *app) {
+  app->close();
+  LOG_S(INFO) << "Quiting...";
+}
+void changeDrawMode(int key, int action, [[maybe_unused]] Application *app) {
+  if (action == GLFW_PRESS) {
+	if (key == GLFW_KEY_UP) {
+	  selected_optionY--;
+	} else if (key == GLFW_KEY_DOWN) {
+	  selected_optionY++;
+	} else {
+	  LOG_S(ERROR) << "How the hell did we end up here?";
+	}
+	LOG_S(INFO) << "Draw mode is now " << selected_optionY;
   }
-  if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
-	selected_optionY--;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
-  }
-  if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-
-	selected_optionY++;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
-  }
-  if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
-	selected_optionX--;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
-  }
-  if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-	selected_optionX++;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
+}
+void changeTask(int key, int action, [[maybe_unused]] Application *app) {
+  if (action == GLFW_PRESS) {
+	if (key == GLFW_KEY_LEFT) {
+	  selected_optionX--;
+	} else if (key == GLFW_KEY_RIGHT) {
+	  selected_optionX++;
+	} else {
+	  LOG_S(ERROR) << "How the hell did we end up here?";
+	}
+	LOG_S(INFO) << "Task is now " << selected_optionX;
   }
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  spdlog::info("App stated!");
-  Window window({800, 600});
+  Application app;
+  app.init(argc, argv);
+  app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
+  app.registerKeyCallback(GLFW_KEY_LEFT, changeTask);
+  app.registerKeyCallback(GLFW_KEY_RIGHT, changeTask);
+  app.registerKeyCallback(GLFW_KEY_UP, changeDrawMode);
+  app.registerKeyCallback(GLFW_KEY_DOWN, changeDrawMode);
+  Application::setOpenGLFlags();
+
   Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
   Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
-
+  LOG_SCOPE_F(INFO, "Objects and buffers init");
   Object objGeneral;
   Object objHyperboloid;
   Object objCube;
-  Cone cone00({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});
-  Cone cone0({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});
+  Cone cone3({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});
+  Cone cone2({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});
   Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.3, 0.9, 0.3});
-  Cone cone2({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});
-  Cylinder cyl1({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});
+  Cone cone0({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});
+  Cylinder trunk({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});
 
   objGeneral.setVertexBuffer({
-								 Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
-								 Vertex({-0.6f, 0.6f, 0}, {.70, 0.20, 0.2}),
-								 Vertex({-0.84853f, 0, 0}, {.1, 0.4, 0.2}),
-								 Vertex({-0.6f, -0.6f, 0}, {.3, 0.7, 0.9}),
-								 Vertex({0.f, -0.84853f, 0}, {.0, 0.3, 0.1}),
-								 Vertex({0.6f, -0.6f, 0}, {.8, 0.5, 0.8}),
-								 Vertex({0.84853f, 0.0f, 0}, {.7, 0.4, 0.5}),
-								 Vertex({0.6f, 0.6f, 0}, {.1, 0.5, 0.21}),
-							 });
+	  Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
+	  Vertex({-0.6f, 0.6f, 0}, {.70, 0.20, 0.2}),
+	  Vertex({-0.84853f, 0, 0}, {.1, 0.4, 0.2}),
+	  Vertex({-0.6f, -0.6f, 0}, {.3, 0.7, 0.9}),
+	  Vertex({0.f, -0.84853f, 0}, {.0, 0.3, 0.1}),
+	  Vertex({0.6f, -0.6f, 0}, {.8, 0.5, 0.8}),
+	  Vertex({0.84853f, 0.0f, 0}, {.7, 0.4, 0.5}),
+	  Vertex({0.6f, 0.6f, 0}, {.1, 0.5, 0.21}),
+  });
 
   std::vector<Vertex> tmp;
   for (int i = 0; i <= 200; i++) {
@@ -132,11 +137,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   glm::mat4 model = glm::mat4(1.0f);// Индивидуально для каждой модели
 
   glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-  /* Loop until the user closes the window */
-  glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-
-  while (!glfwWindowShouldClose(window.getWindow())) {
-	window.updateFpsCounter();
+  LOG_SCOPE_F(INFO, "Runtime");
+  while (!app.shouldClose) {
 	Renderer::clear({0.16, 0.36, 0.42, 0});
 	if (selected_optionX < 3) {
 	  view = glm::lookAt(
@@ -144,7 +146,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		  glm::vec3(0, 0, 0),// И направлена в начало координат
 		  glm::vec3(0, 1, 0) // "Голова" находится сверху
 	  );
-	  model = glm::mat4(1.0f);// Индивидуально для каждой модели
+	  model     = glm::mat4(1.0f);          // Индивидуально для каждой модели
 	  MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	}
 
@@ -203,21 +205,22 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		Renderer::draw(&objCube, &lShader);
 		break;
 
-	  case 7: lShader.bind();
+	  case 7:
+		lShader.bind();
 		view = glm::lookAt(
 			glm::vec3(0, 0, 2),// Камера находится в мировых координатах (4,3,3)
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model = glm::rotate(model, 0.004f, {0, 1, 0});
+		model     = glm::rotate(model, 0.004f, {0, 1, 0});
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-		Renderer::draw(&cone2, &lShader);
-		Renderer::draw(&cone1, &lShader);
 		Renderer::draw(&cone0, &lShader);
-		Renderer::draw(&cone00, &lShader);
-		Renderer::draw(&cyl1, &lShader);
+		Renderer::draw(&cone1, &lShader);
+		Renderer::draw(&cone2, &lShader);
+		Renderer::draw(&cone3, &lShader);
+		Renderer::draw(&trunk, &lShader);
 		break;
-	  default:break;
+	  default: break;
 	}
 
 	switch (selected_optionY) {
@@ -246,13 +249,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	else if (r < 0.0f)
 	  increment = 0.01f;
 	r += increment;
+
 	/* Swap front and back buffers */
-	glfwSwapBuffers(window.getWindow());
+	glCall(glfwSwapBuffers(app.getWindow()->getGLFWWindow()));
 
 	/* Poll for and process events */
 	glfwPollEvents();
   }
-  window.destroy();
-  spdlog::info("Program finished");
   return 0;
 }

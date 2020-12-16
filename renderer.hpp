@@ -8,9 +8,9 @@
 #include <string>
 
 #include "Buffers/index_buffer.hpp"
-#include "shader.hpp"
 #include "Buffers/vertex_array.hpp"
 #include "object.hpp"
+#include "shader.hpp"
 
 class Renderer {
  public:

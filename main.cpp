@@ -8,7 +8,7 @@
 
 void programQuit(int key, int action, Application *app) {
   app->close();
-  PLOGV << "Quiting...";
+  LOG_S(INFO) << "Quiting...";
 }
 
 int main(int argc, char *argv[]) {

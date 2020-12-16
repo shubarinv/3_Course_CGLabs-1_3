@@ -6,7 +6,6 @@
 #define CGLABS__VERTEX_HPP_
 class Vertex {
   glm::vec3 position{}; ///< @brief coords of Vertex
-  [[deprecated]]bool front = true; ///<@deprecated this value is not used and will be removed in the future
 
  public:
   /**
@@ -45,7 +44,7 @@ class Vertex {
    */
   void setColor(glm::vec3 _color) {
 	if (_color.x < -1 || _color.x > 1 || _color.y < -1 || _color.y > 1 || _color.z < -1 || _color.z > 1) {
-	  PLOGE << "Invalid color!";
+	  LOG_S(ERROR) << "Invalid color!";
 	}
 	color = _color;
   }

@@ -23,12 +23,12 @@ class ColorBuffer : public Buffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW));
-	PLOGV << "ColorBuffer created rendererID: " << rendererID;
+	LOG_S(INFO) << "ColorBuffer created rendererID: " << rendererID;
   }
 
   ~ColorBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	PLOGV << "ColorBuffer destroyed rendererID: " << rendererID;
+	LOG_S(INFO) << "ColorBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
