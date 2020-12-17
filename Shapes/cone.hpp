@@ -12,7 +12,6 @@ class Cone : public Object {
 	auto xe = position.x;
 	auto ze = position.z + radius;
 	vertices.push_back(Vertex({xe, position.y, ze}, color));
-	spdlog::info("x: {} z: {}", xe, ze);
 	double alpha = M_PI / 2;
 	for (int i = 0; i < sides - 1; i++) {
 	  alpha += 2 * M_PI / sides;

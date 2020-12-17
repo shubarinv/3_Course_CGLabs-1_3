@@ -4,26 +4,27 @@
 #ifndef CG_LABS_FUNCTIONS_HPP
 #define CG_LABS_FUNCTIONS_HPP
 
-#include <plog/Log.h>
-#include <plog/Init.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Appenders/ColorConsoleAppender.h>
-#if defined (__APPLE__)
-#define GL_SILENCE_DEPRECATION
+#if defined(__APPLE__)
+  #define GL_SILENCE_DEPRECATION
 #endif
-
+#define LOGURU_WITH_STREAMS 1
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GLFW/glfw3.h>
 
-void logInit() {
-  static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-  plog::init(plog::verbose, &consoleAppender);
+#include "Libs/loguru.cpp"
+
+void logInit([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+  loguru::init(argc, argv);
+
+  // Put every log message in "everything.log":
+  loguru::add_file("main.log", loguru::Append, loguru::Verbosity_MAX);
 }
-#if defined (__APPLE__)
-#define ASSERT(X) \
-  if (!(X)) __builtin_debugtrap();
+#if defined(__APPLE__)
+  #define ASSERT(X) \
+	if (!(X)) __builtin_trap();
 #endif
 
 #if defined (__WIN32__)
@@ -88,11 +89,11 @@ std::string glErrorToString(GLenum error) {
  **/
 bool glLogCall(const char *function = {}, const char *file = {}, int line = -1) {
   if (function == nullptr && file == nullptr && line == -1) {
-	PLOGW << "glLogCall() should not be called directly, wrap GL call in glCall()";
+	LOG_S(ERROR) << "glLogCall() should not be called directly, wrap GL call in glCall()";
 	return true;
   }
   while (GLenum error = glGetError()) {
-	PLOGW << "OpenGL error: " << glErrorToString(error) << " in file " << file << " in function " << function << " at line: " << line;
+	LOG_S(ERROR) << "OpenGL error: " << glErrorToString(error) << " in file " << file << " in function " << function << " at line: " << line;
   }
   return true;
 }

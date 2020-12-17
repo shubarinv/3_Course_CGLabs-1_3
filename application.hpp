@@ -12,15 +12,17 @@ class Application {
   Window *window{};
   typedef void (*functionType)(int, int, Application *);
   std::map<int, functionType> keyPressCallbacks;
+
  public:
   [[nodiscard]] Window *getWindow() const {
 	return window;
   }
 
   bool shouldClose{false};
-  void init() {
-	logInit();
-	window = new Window({800,600});
+  void init([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+	LOG_SCOPE_F(INFO, "Libs init");
+	logInit(argc, argv);
+	window = new Window({800, 600});
 	setOpenGLFlags();
 	glfwSetKeyCallback(window->getGLFWWindow(), keyCallback);
 
@@ -30,7 +32,7 @@ class Application {
   void registerKeyCallback(int key, functionType func) {
 	auto posOfPreviouslyRegisteredKeyPressCallbacks = keyPressCallbacks.find(key);
 	if (posOfPreviouslyRegisteredKeyPressCallbacks != keyPressCallbacks.end()) {
-	  PLOGV << "Call back for \"" << glfwGetKeyName(key, 0) << "\" was already registered";
+	  LOG_S(INFO) << "Call back for \"" << glfwGetKeyName(key, 0) << "\" was already registered";
 	}
 	keyPressCallbacks.emplace(key, func);
   }
@@ -57,25 +59,19 @@ class Application {
 
   void close() {
 	shouldClose = true;
-	//PLOGV << "Destroying all meshes!";
-	//std::vector<Mesh>().swap(meshes);
 	delete (window);
   }
 
   ~ Application() {
-	PLOGV << "Application destroyed";
-	delete (window);
+	LOG_S(INFO) << "Application destroyed";
   }
 
  private:
   void handleKeyboard([[maybe_unused]] GLFWwindow *_window, int key, int scancode, int action, [[maybe_unused]] int mods) {
-	PLOGV << "KeyCallback: " << glfwGetKeyName(key, scancode);
 	auto requiredCallback = keyPressCallbacks.find(key);
 	if (requiredCallback != keyPressCallbacks.end()) {
-	  PLOGV << "Calling registered callback";
+	  LOG_S(INFO) << "Calling registered callback";
 	  requiredCallback->second(key, action, this);
-	} else {
-	  PLOGV << "No registered callback for " << glfwGetKeyName(key, scancode);
 	}
   }
 

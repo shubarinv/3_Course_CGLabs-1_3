@@ -16,9 +16,9 @@ class Window {
   Window(glm::vec2 size) {
 	glfwSetErrorCallback(glfwErrorHandler);
 	if (!glfwInit()) {
-	  PLOGF << "GLFW INIT FAILED";
+	  LOG_S(FATAL) << "GLFW INIT FAILED";
 	}
-	PLOGV << "GLFW init - OK";
+	LOG_S(INFO) << "GLFW init - OK";
 
 	if (isMac()) {
 	  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// Highest available version for macOS
@@ -26,37 +26,37 @@ class Window {
 
 	  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	  PLOGV << "System: MacOS";
+	  LOG_S(INFO) << "System: MacOS";
 	}
 
 	window = glfwCreateWindow(size.x, size.y, "UNSET", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	if (window == nullptr) {
-	  PLOGF << "GLFW was unable to create window";
+	  LOG_S(FATAL) << "GLFW was unable to create window";
 	  glfwTerminate();
 	}
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-	  PLOGF << "GLAD init Failed";
+	  LOG_S(FATAL) << "GLAD init Failed";
 	}
-	PLOGV << "Status: Using OpenGL v" << glGetString(GL_VERSION);
-	PLOGV << "Renderer: " << glGetString(GL_RENDERER); /* get renderer string */
+	LOG_S(INFO) << "Status: Using OpenGL v" << glGetString(GL_VERSION);
+	LOG_S(INFO) << "Renderer: " << glGetString(GL_RENDERER); /* get renderer string */
 	GLint maxShaderTextures;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxShaderTextures);
 	GLint maxTotalTextures;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTotalTextures);
-	PLOGV << "Number of textures that can be accessed by the fragment shader: " << maxShaderTextures;
-	PLOGV << "Total number of textures that can be used " << maxTotalTextures;
+	LOG_S(INFO) << "Number of textures that can be accessed by the fragment shader: " << maxShaderTextures;
+	LOG_S(INFO) << "Total number of textures that can be used " << maxTotalTextures;
 	glEnable(GL_MULTISAMPLE);
-	PLOGV << "Init DONE!";
+	LOG_S(INFO) << "Init DONE!";
   }
   static void glfwErrorHandler(int error, const char *message) {
-	PLOGE << "GLFW error: " << error << " " << message;
+	LOG_S(ERROR) << "GLFW error: " << error << " " << message;
   }
   ~Window() {
 	glfwDestroyWindow(window);
-	PLOGV << "GLFW window destroyed";
-	PLOGV << "Window(" << this << ") destroyed";
+	LOG_S(INFO) << "GLFW window destroyed";
+	LOG_S(INFO) << "Window(" << this << ") destroyed";
   }
 };
 
