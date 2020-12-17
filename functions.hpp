@@ -20,7 +20,7 @@ void logInit([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   loguru::init(argc, argv);
 
   // Put every log message in "everything.log":
-  loguru::add_file("main.log", loguru::Append, loguru::Verbosity_MAX);
+  loguru::add_file("main.log", loguru::Truncate, loguru::Verbosity_MAX);
 }
 #if defined(__APPLE__)
   #define ASSERT(X) \
