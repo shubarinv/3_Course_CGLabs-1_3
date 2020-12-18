@@ -7,8 +7,8 @@
 
 #include <utility>
 
-#include "Buffers/index_buffer.hpp"
 #include "Buffers/color_buffer.hpp"
+#include "Buffers/index_buffer.hpp"
 #include "texture.hpp"
 
 class Object {
@@ -18,10 +18,10 @@ class Object {
   VertexBuffer *vertexBuffer{};      ///< @brief Holds data about vertices location.
   VertexArray *vertexArray{};        ///< @brief Holds all data about vertices (Location, Color/Texture, order).
   ColorBuffer *colorBuffer{};        ///< @brief Holds data about vertices colors.
-  Texture *texture{};                /// @brief Holds data about texture.
-  VertexBufferLayout *bufferLayout{};///<@brief Specifies amount of params per each vertex and their type.
-  unsigned int layoutLength{3};      ///<@brief Specifies amount of params per each vertex.
-  int timesToPushLayout = {1};       ///@brief corresponds with amount of layouts shader has.
+  Texture *texture{};                ///< @brief Holds data about texture.
+  VertexBufferLayout *bufferLayout{};///< @brief Specifies amount of params per each vertex and their type.
+  unsigned int layoutLength{3};      ///< @brief Specifies amount of params per each vertex.
+  int timesToPushLayout = {1};       ///< @brief corresponds with amount of layouts shader has.
   bool bInitialized{false};
   bool bOptimized{true};///< @Whether vertices are being reused or not.
  public:
@@ -170,7 +170,7 @@ class Object {
 	  if (colorBuffer != nullptr) {
 		vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
 	  }
-	  delete(bufferLayout);
+	  delete (bufferLayout);
 	} else {
 	  auto *verticesLayout = new VertexBufferLayout();
 	  auto *textureCoordsLayout = new VertexBufferLayout();
@@ -181,9 +181,9 @@ class Object {
 	  auto texCoords = texture->generateTextureCoords(indexBuffer->getLength());
 	  auto *textureVertexBuffer = new VertexBuffer(texCoords.data(), texCoords.size() * sizeof(float));
 	  vertexArray->addBuffer(*textureVertexBuffer, *textureCoordsLayout, 1);
-	  delete(verticesLayout);
-	  delete(textureCoordsLayout);
-	  delete(textureVertexBuffer);
+	  delete (verticesLayout);
+	  delete (textureCoordsLayout);
+	  delete (textureVertexBuffer);
 	}
 	bInitialized = true;
   }
@@ -196,8 +196,6 @@ class Object {
 	delete (vertexBuffer);
 	delete (vertexArray);
   }
-
-
 };
 
-#endif //CGLABS__OBJECT_HPP_
+#endif//CGLABS__OBJECT_HPP_

@@ -19,6 +19,7 @@ class Window {
 	glfwSetErrorCallback(glfwErrorHandler);
 	if (!glfwInit()) {
 	  LOG_S(FATAL) << "GLFW INIT FAILED";
+	  throw std::runtime_error("Failed to init glfw");
 	}
 	LOG_S(INFO) << "GLFW init - OK";
 

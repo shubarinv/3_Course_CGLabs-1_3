@@ -20,6 +20,7 @@ class Application {
 
   bool shouldClose{false};
   void init(glm::vec2 windowSize,[[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+	LOG_S(INFO)<<"Hello world!";
 	LOG_SCOPE_F(INFO, "Libs init");
 	logInit(argc, argv);
 	window = new Window(windowSize);

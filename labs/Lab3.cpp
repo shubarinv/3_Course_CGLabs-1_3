@@ -4,7 +4,6 @@
 #define GL_SILENCE_DEPRECATION
 
 #include <cmath>
-#include <random>
 
 #include "../Buffers/color_buffer.hpp"
 #include "../Buffers/index_buffer.hpp"
