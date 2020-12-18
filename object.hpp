@@ -13,17 +13,17 @@
 
 class Object {
  protected:
-  glm::vec3 color{}; ///< @brief If you are not planning to use texture, you can set obj color.
-  IndexBuffer *indexBuffer{}; ///< @brief Holds in which order should vertices be drawn.
-  VertexBuffer *vertexBuffer{}; ///< @brief Holds data about vertices location.
-  VertexArray *vertexArray{}; ///< @brief Holds all data about vertices (Location, Color/Texture, order).
-  ColorBuffer *colorBuffer{}; ///< @brief Holds data about vertices colors.
-  Texture *texture{}; /// @brief Holds data about texture.
-  VertexBufferLayout *bufferLayout{}; ///<@brief Specifies amount of params per each vertex and their type.
-  unsigned int layoutLength{3}; ///<@brief Specifies amount of params per each vertex.
-  int timesToPushLayout = {1}; ///@brief corresponds with amount of layouts shader has.
+  glm::vec3 color{};                 ///< @brief If you are not planning to use texture, you can set obj color.
+  IndexBuffer *indexBuffer{};        ///< @brief Holds in which order should vertices be drawn.
+  VertexBuffer *vertexBuffer{};      ///< @brief Holds data about vertices location.
+  VertexArray *vertexArray{};        ///< @brief Holds all data about vertices (Location, Color/Texture, order).
+  ColorBuffer *colorBuffer{};        ///< @brief Holds data about vertices colors.
+  Texture *texture{};                /// @brief Holds data about texture.
+  VertexBufferLayout *bufferLayout{};///<@brief Specifies amount of params per each vertex and their type.
+  unsigned int layoutLength{3};      ///<@brief Specifies amount of params per each vertex.
+  int timesToPushLayout = {1};       ///@brief corresponds with amount of layouts shader has.
   bool bInitialized{false};
-  bool bOptimized{true}; ///< @Whether vertices are being reused or not.
+  bool bOptimized{true};///< @Whether vertices are being reused or not.
  public:
   /**
    * @brief returns current contents of indexBuffer
@@ -33,7 +33,8 @@ class Object {
   [[nodiscard]] IndexBuffer *getIndexBuffer() const {
 	if (bInitialized)
 	  return indexBuffer;
-	else throw std::runtime_error("Object is not initialized!");
+	else
+	  throw std::runtime_error("Object is not initialized!");
   }
   /**
    * @brief returns current contents of vertexArray
@@ -43,7 +44,8 @@ class Object {
   [[nodiscard]] VertexArray *getVertexArray() const {
 	if (bInitialized)
 	  return vertexArray;
-	else throw std::runtime_error("Object is not initialized!");
+	else
+	  throw std::runtime_error("Object is not initialized!");
   }
 
   /**
@@ -110,7 +112,7 @@ class Object {
 	timesToPushLayout = times;
   }
 
-/**
+  /**
  * @brief Sets colorBuffer with data from vector of Vertices
  * @param _verticesWithColors  vector of Vertices that have defined colors
  */
@@ -133,8 +135,8 @@ class Object {
   }
 
   void complicate() {
-	if (vertexBuffer == nullptr)throw std::runtime_error("VertexBuffer is null, set it before setting texture");
-	if (indexBuffer == nullptr)throw std::runtime_error("IndexBuffer is null, set it before setting texture");
+	if (vertexBuffer == nullptr) throw std::runtime_error("VertexBuffer is null, set it before setting texture");
+	if (indexBuffer == nullptr) throw std::runtime_error("IndexBuffer is null, set it before setting texture");
 	std::vector<Vertex> tmp;
 	for (int i = 0; i < indexBuffer->getLength(); i++) {
 	  tmp.push_back(vertexBuffer->getVertices()[indexBuffer->getIndices()[i]]);
@@ -184,6 +186,13 @@ class Object {
   void draw() {
 	if (texture != nullptr) texture->bind();
   }
+  ~Object() {
+	LOG_SCOPE_F(INFO, "Object destruction");
+	delete (colorBuffer);
+	delete (vertexBuffer);
+	delete (vertexArray);
+  }
+
 
 };
 

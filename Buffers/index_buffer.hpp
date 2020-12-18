@@ -70,7 +70,7 @@ class IndexBuffer : public Buffer {
   }
   ~IndexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	LOG_S(INFO) << "IndexBuffer destroyed rendererID: " << rendererID;
+	//LOG_S(INFO) << "IndexBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));

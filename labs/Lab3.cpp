@@ -102,7 +102,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   std::vector<Vertex> tmp;/// координаты для точек гиперболойды
   for (int i = 0; i <= 200; i++) {
-	double angle  = 2 * 3.141 * i / 200;
+	double angle = 2 * 3.141 * i / 200;
 	double pointX = cos(angle);
 	double pointY = sin(angle);
 	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.1, 0.5, 0.21}));
@@ -228,7 +228,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		  glm::vec3(0, 0, 0),// И направлена в начало координат
 		  glm::vec3(0, 1, 0) // "Голова" находится сверху
 	  );
-	  model     = glm::mat4(1.0f);          // Индивидуально для каждой модели
+	  model = glm::mat4(1.0f);              // Индивидуально для каждой модели
 	  MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 	}
 
@@ -236,13 +236,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	lShader.setUniformMat4f("u_MVP", MVPmatrix);
 
 	switch (selected_optionX) {
-	  case 0: objGeneral.setIndexBuffer(&index_buffer0);
+	  case 0:
+		objGeneral.setIndexBuffer(&index_buffer0);
 		Renderer::draw(&objGeneral, &lShader);
 		break;
-	  case 1: objGeneral.setIndexBuffer(&index_buffer1);
+	  case 1:
+		objGeneral.setIndexBuffer(&index_buffer1);
 		Renderer::draw(&objGeneral, &lShader);
 		break;
-	  case 2: objGeneral.setIndexBuffer(&index_buffer2);
+	  case 2:
+		objGeneral.setIndexBuffer(&index_buffer2);
 		Renderer::draw(&objGeneral, &lShader);
 		break;
 	  case 3: {
@@ -255,12 +258,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  }
-	  case 4: view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	  case 4:
+		view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		model = glm::rotate(model, 0.001f, {0, 0, 1});
 		Renderer::draw(&objHyperboloid, &lShader);
 		break;
-	  case 5: uShader.bind();
+	  case 5:
+		uShader.bind();
 		uShader.setUniformMat4f("u_MVP", MVPmatrix);
 		uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
 		view = glm::lookAt(
@@ -268,10 +273,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model = glm::scale(
-			glm::mat4(1.0f),
-			glm::vec3(r)
-		);
+		model = glm::scale(glm::mat4(1.0f), glm::vec3(r*0.4));
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		Renderer::draw(&objHyperboloid, &uShader);
 		break;
@@ -282,7 +284,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model = glm::mat4(1.0f);// Индивидуально для каждой модели
+		model = glm::mat4(1.0f);              // Индивидуально для каждой модели
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		Renderer::draw(&objCube, &lShader);
 		break;
@@ -294,7 +296,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			glm::vec3(0, 0, 0),// И направлена в начало координат
 			glm::vec3(0, 1, 0) // "Голова" находится сверху
 		);
-		model     = glm::rotate(model, 0.004f, {0, 1, 0});
+		model = glm::rotate(model, 0.004f, {0, 1, 0});
 		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
 		Renderer::draw(&cone0, &lShader);
 		Renderer::draw(&cone1, &lShader);
@@ -306,21 +308,24 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	}
 
 	switch (selected_optionY) {
-	  case 0: glCall(glDisable(GL_DEPTH_TEST));
+	  case 0:
+		glCall(glDisable(GL_DEPTH_TEST));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
 	  case 1:
 		// Включить тест глубины
-	  glCall(glEnable(GL_DEPTH_TEST));
+		glCall(glEnable(GL_DEPTH_TEST));
 		// Фрагмент будет выводиться только в том, случае, если он находится ближе к камере, чем предыдущий
 		glDepthFunc(GL_LESS);
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
-	  case 2: glCall(glPointSize(10));
+	  case 2:
+		glCall(glPointSize(10));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_POINT));
 		break;
 
-	  case 3: glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+	  case 3:
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 		break;
 
 	  default: break;

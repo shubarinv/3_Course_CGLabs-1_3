@@ -62,7 +62,7 @@ class Application {
 	delete (window);
   }
 
-  ~ Application() {
+  ~Application() {
 	LOG_S(INFO) << "Application destroyed";
   }
 
