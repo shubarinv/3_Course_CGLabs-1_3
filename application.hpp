@@ -19,13 +19,13 @@ class Application {
   }
 
   bool shouldClose{false};
-  void init([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+  void init(glm::vec2 windowSize,[[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	LOG_SCOPE_F(INFO, "Libs init");
 	logInit(argc, argv);
-	window = new Window({800, 600});
+	window = new Window(windowSize);
 	setOpenGLFlags();
+	/// following is required for keyboard related callbacks
 	glfwSetKeyCallback(window->getGLFWWindow(), keyCallback);
-
 	glfwSetWindowUserPointer(window->getGLFWWindow(), this);
   }
 

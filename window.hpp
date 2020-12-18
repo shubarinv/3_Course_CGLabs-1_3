@@ -8,10 +8,12 @@
 class Window {
  private:
   GLFWwindow *window;
+
  public:
   [[nodiscard]] GLFWwindow *getGLFWWindow() const {
 	return window;
   }
+
  public:
   Window(glm::vec2 size) {
 	glfwSetErrorCallback(glfwErrorHandler);
@@ -60,4 +62,4 @@ class Window {
   }
 };
 
-#endif //CGLABS__WINDOW_HPP_
+#endif//CGLABS__WINDOW_HPP_

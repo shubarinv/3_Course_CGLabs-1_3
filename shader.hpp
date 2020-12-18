@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+
 #include "functions.hpp"
 
 class Shader {
@@ -17,8 +18,8 @@ class Shader {
    * @brief contains code for vertex and fragment shader
    */
   struct ShaderProgramSource {
-	std::string vertexShader{}; ///< @brief program for vertex shader
-	std::string fragmentShader{}; ///< @brief program for fragment shader
+	std::string vertexShader{};  ///< @brief program for vertex shader
+	std::string fragmentShader{};///< @brief program for fragment shader
   };
 
  public:
@@ -28,8 +29,8 @@ class Shader {
    */
   explicit Shader(const std::string &_filepath) {
 	LOG_SCOPE_F(INFO, "Shader init");
-	filepath   = _filepath;
-	source     = parseShader();
+	filepath = _filepath;
+	source = parseShader();
 	rendererID = createShader();
 	LOG_S(INFO) << "Created shader with id: " << rendererID;
   }
@@ -73,7 +74,7 @@ class Shader {
 
  private:
   ShaderProgramSource source;
-  std::unordered_map<std::string, int> uniformLocationCache; ///< cache of uniforms locations
+  std::unordered_map<std::string, int> uniformLocationCache;///< cache of uniforms locations
 
   /**
    * @brief gets location of uniform in shader
@@ -109,8 +110,8 @@ class Shader {
 	std::string line;
 	std::stringstream ss[2];
 	enum class shaderType {
-	  NONE     = -1,
-	  VERTEX   = 0,
+	  NONE = -1,
+	  VERTEX = 0,
 	  FRAGMENT = 1
 	};
 	shaderType type = shaderType::NONE;

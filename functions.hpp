@@ -25,7 +25,7 @@ void logInit([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 }
 #if defined(__APPLE__)
   #define ASSERT(X) \
-	if (!(X)) __builtin_trap();
+	if (!(X)) __builtin_trap()
 #endif
 
 #if defined (__WIN32__)

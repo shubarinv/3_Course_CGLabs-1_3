@@ -5,7 +5,7 @@
 #ifndef CGLABS__VERTEX_HPP_
 #define CGLABS__VERTEX_HPP_
 class Vertex {
-  glm::vec3 position{}; ///< @brief coords of Vertex
+  glm::vec3 position{};///< @brief coords of Vertex
 
  public:
   /**

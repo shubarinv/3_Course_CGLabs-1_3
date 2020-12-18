@@ -170,6 +170,7 @@ class Object {
 	  if (colorBuffer != nullptr) {
 		vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
 	  }
+	  delete(bufferLayout);
 	} else {
 	  auto *verticesLayout = new VertexBufferLayout();
 	  auto *textureCoordsLayout = new VertexBufferLayout();
@@ -180,6 +181,9 @@ class Object {
 	  auto texCoords = texture->generateTextureCoords(indexBuffer->getLength());
 	  auto *textureVertexBuffer = new VertexBuffer(texCoords.data(), texCoords.size() * sizeof(float));
 	  vertexArray->addBuffer(*textureVertexBuffer, *textureCoordsLayout, 1);
+	  delete(verticesLayout);
+	  delete(textureCoordsLayout);
+	  delete(textureVertexBuffer);
 	}
 	bInitialized = true;
   }

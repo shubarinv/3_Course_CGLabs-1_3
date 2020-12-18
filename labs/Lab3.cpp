@@ -67,7 +67,7 @@ void changeTask(int key, int action, [[maybe_unused]] Application *app) {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Application app;
-  app.init(argc, argv);
+  app.init({720,480},argc, argv);
   app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
   app.registerKeyCallback(GLFW_KEY_LEFT, changeTask);
   app.registerKeyCallback(GLFW_KEY_RIGHT, changeTask);
@@ -85,7 +85,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Cone cone3({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});         ///< верхушка елки
   Cone cone2({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});         ///< часть елки
   Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.3, 0.9, 0.3});         ///< часть елки
-  Cone cone0({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});          ///< нижнаяя часть елки
+  Cone cone0({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});          ///< нижняя часть елки
   Cylinder trunk({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});///< ствол елки
 
   objGeneral.setVertexBuffer({
