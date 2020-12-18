@@ -6,7 +6,7 @@
 #define CGLABS__VERTEX_BUFFER_HPP_
 
 #include <vector>
-#include "../lib.hpp"
+#include "../functions.hpp"
 #include "../vertex.hpp"
 class VertexBuffer : public Buffer {
  private:
@@ -29,19 +29,19 @@ class VertexBuffer : public Buffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW));
-	spdlog::info("VertexBuffer(Vertex) created rendererID: {}", rendererID);
+	LOG_S(INFO) << "VertexBuffer created rendererID: " << rendererID;
   }
 
   [[maybe_unused]] VertexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-	spdlog::info("VertexBuffer(General) created rendererID: {}", rendererID);
+	LOG_S(INFO) << "VertexBuffer created rendererID: " << rendererID;
   }
 
   ~VertexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	spdlog::info("VertexBuffer destroyed rendererID: {}", rendererID);
+	LOG_S(INFO) << "VertexBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));

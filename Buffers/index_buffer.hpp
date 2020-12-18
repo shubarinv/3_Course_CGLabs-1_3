@@ -8,7 +8,7 @@
 #include <vector>
 #include "../vertex.hpp"
 #include "buffer.hpp"
-#include "../lib.hpp"
+#include "../functions.hpp"
 class IndexBuffer : public Buffer {
  private:
   unsigned int length{};
@@ -28,17 +28,17 @@ class IndexBuffer : public Buffer {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int), _indices.data(), GL_STATIC_DRAW));
-	length = _indices.size();
+	length  = _indices.size();
 	indices = _indices;
 
-	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
+	LOG_S(INFO) << "IndexBuffer created rendererID: " << rendererID;
   }
   [[deprecated]][[maybe_unused]] explicit IndexBuffer(const void *data, unsigned int size) {
 	glCall(glGenBuffers(1, &rendererID));
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), data, GL_STATIC_DRAW));
 	length = size;
-	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
+	LOG_S(INFO) << "IndexBuffer created rendererID: " << rendererID;
   }
   explicit IndexBuffer(const std::vector<Vertex> &vertices, bool quads = true) {
 	std::vector<unsigned int> _indices;
@@ -66,11 +66,11 @@ class IndexBuffer : public Buffer {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));
 	glCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof(unsigned int), _indices.data(), GL_STATIC_DRAW));
 	length = _indices.size();
-	spdlog::info("IndexBuffer created rendererID: {}", rendererID);
+	LOG_S(INFO) << "IndexBuffer created rendererID: " << rendererID;
   }
   ~IndexBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));
-	spdlog::info("IndexBuffer destroyed rendererID: {}", rendererID);
+	//LOG_S(INFO) << "IndexBuffer destroyed rendererID: " << rendererID;
   }
   void bind() const override {
 	glCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID));

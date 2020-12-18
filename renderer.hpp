@@ -8,9 +8,9 @@
 #include <string>
 
 #include "Buffers/index_buffer.hpp"
-#include "shader.hpp"
 #include "Buffers/vertex_array.hpp"
 #include "object.hpp"
+#include "shader.hpp"
 
 class Renderer {
  public:
@@ -34,7 +34,7 @@ class Renderer {
    * @param mode draw mode. (GL_TRIANGLES, GL_LINES, GL_TRIANGLE_STRIP, ...)
    */
   static void draw(Object *object, Shader *shader, GLuint mode = GL_TRIANGLES) {
-    object->draw();
+	object->draw();
 	shader->bind();
 	object->getVertexArray()->bind();
 	object->getIndexBuffer()->bind();

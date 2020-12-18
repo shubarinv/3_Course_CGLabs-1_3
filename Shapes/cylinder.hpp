@@ -16,7 +16,6 @@ class Cylinder : public Object {
 	std::vector<Vertex> vertices;
 	auto xe = position.x;
 	auto ze = position.z + radius;
-	spdlog::info("x: {} z: {}", xe, ze);
 	double alpha = M_PI / 2;
 	for (int i = 0; i < sides; i++) {
 	  alpha += 2 * M_PI / sides;

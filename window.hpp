@@ -1,105 +1,70 @@
 //
-// Created by Vladimir Shubarin on 17.10.2020.
+// Created by Vladimir Shubarin on 02.12.2020.
 //
 
 #ifndef CGLABS__WINDOW_HPP_
 #define CGLABS__WINDOW_HPP_
-
-
-#include <utility>
-#include <iostream>
-
-#include "lib.hpp"
-
+#include "functions.hpp"
 class Window {
-  GLFWwindow* glWindow; ///< @brief reference to GLFW window
-  std::string title; ///< @brief window title
+ private:
+  GLFWwindow *window;
+  glm::vec2 windowSize{};
 
  public:
-  /**
-   * @brief Destroys window
-   */
-  void destroy() {
-	glfwDestroyWindow(glWindow);
-	glfwTerminate();
+  const glm::vec2 &getWindowSize() const {
+	return windowSize;
   }
 
-  /**
-   * @returns returns true if window should be closed
-   */
-  [[maybe_unused]] bool getShouldClose() {
-	return glfwWindowShouldClose(glWindow);
+  [[nodiscard]] GLFWwindow *getGLFWWindow() const {
+	return window;
   }
 
-  /**
-   * @param size window size
-   * @param _title window title
-   */
-  explicit Window(glm::vec2 size, std::string _title = "UNSET ") {
-	/* Initialize the library */
+  Window(glm::vec2 size) {
+	windowSize=size;
+	glfwSetErrorCallback(glfwErrorHandler);
 	if (!glfwInit()) {
-	  throw std::runtime_error("Failed to init GLFW");
+	  LOG_S(FATAL) << "GLFW INIT FAILED";
+	  throw std::runtime_error("Failed to init glfw");
 	}
-	title = std::move(_title);
-	glfwWindowHint(GLFW_SAMPLES, 4);              // 4x antialiasing
-	if(isMac()){
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// We want OpenGL 4.1
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	}
-	else if(isWindows()){
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);// We want OpenGL 4.1
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	}
-	glfwWindowHint(GLFW_FLOATING, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
+	LOG_S(INFO) << "GLFW init - OK";
 
-	if(!isWindows()){
-	    spdlog::debug("GLFW Init - OK");
+	if (isMac()) {
+	  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// Highest available version for macOS
+	  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);// Highest available version for macOS
+
+	  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	  LOG_S(INFO) << "System: MacOS";
 	}
-	/* Create a windowed mode window and its OpenGL context */
-	glWindow = glfwCreateWindow(size.x, size.y, "Hello World", nullptr, nullptr);
-	if (!glWindow) {
+
+	window = glfwCreateWindow(size.x, size.y, "UNSET", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
+	if (window == nullptr) {
+	  LOG_S(FATAL) << "GLFW was unable to create window";
 	  glfwTerminate();
-	  spdlog::critical("Application::Failed to create window");
-	  throw std::runtime_error("Failed to create window");
 	}
-	spdlog::debug("Window created successfully");
-	/* Make the window's context current */
-	glfwMakeContextCurrent(glWindow);
+
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-	  std::cout << "Failed to initialize OpenGL context" << std::endl;
-	  throw;
+	  LOG_S(FATAL) << "GLAD init Failed";
 	}
-	spdlog::info("Status: Using OpenGL v{}", glGetString(GL_VERSION));
+	LOG_S(INFO) << "Status: Using OpenGL v" << glGetString(GL_VERSION);
+	LOG_S(INFO) << "Renderer: " << glGetString(GL_RENDERER); /* get renderer string */
 	GLint maxShaderTextures;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxShaderTextures);
 	GLint maxTotalTextures;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTotalTextures);
-	spdlog::info("Number of textures that can be accessed by the fragment shader: {}", maxShaderTextures);
-	spdlog::info("Total number of textures that can be used {}", maxTotalTextures);
+	LOG_S(INFO) << "Number of textures that can be accessed by the fragment shader: " << maxShaderTextures;
+	LOG_S(INFO) << "Total number of textures that can be used " << maxTotalTextures;
 	glEnable(GL_MULTISAMPLE);
+	LOG_S(INFO) << "Init DONE!";
   }
-
-  /**
-   * @brief updates fps count in window title
-   */
-  [[maybe_unused]] void updateFpsCounter() {
-	static double previous_seconds = glfwGetTime();
-	static int frame_count;
-	double current_seconds = glfwGetTime();
-	double elapsed_seconds = current_seconds - previous_seconds;
-	if (elapsed_seconds > 0.25) {
-	  previous_seconds = current_seconds;
-	  double fps       = (double)frame_count / elapsed_seconds;
-	  std::string tmp  = title + "@ fps: " + std::to_string((int)round(fps));
-	  glfwSetWindowTitle(glWindow, tmp.c_str());
-	  frame_count = 0;
-	}
-	frame_count++;
+  static void glfwErrorHandler(int error, const char *message) {
+	LOG_S(ERROR) << "GLFW error: " << error << " " << message;
   }
-  GLFWwindow* getWindow() {
-	return glWindow;
+  ~Window() {
+	glfwDestroyWindow(window);
+	LOG_S(INFO) << "GLFW window destroyed";
+	LOG_S(INFO) << "Window(" << this << ") destroyed";
   }
 };
 
