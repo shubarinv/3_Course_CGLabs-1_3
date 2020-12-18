@@ -11,6 +11,7 @@
 #include "../Shapes/cone.hpp"
 #include "../Shapes/cylinder.hpp"
 #include "../application.hpp"
+#include "../camera.hpp"
 #include "../renderer.hpp"
 
 int selected_optionX = 0;
@@ -66,7 +67,7 @@ void changeTask(int key, int action, [[maybe_unused]] Application *app) {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Application app;
-  app.init({720,480},argc, argv);
+  app.init({720, 480}, argc, argv);
   app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
   app.registerKeyCallback(GLFW_KEY_LEFT, changeTask);
   app.registerKeyCallback(GLFW_KEY_RIGHT, changeTask);
@@ -202,37 +203,20 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   float r = 0.0f;
   float increment = 0.05f;
 
-  glm::mat4 projection = glm::perspective(
-	  glm::radians(90.f),// Вертикальное поле зрения в радианах. Обычно между 90&deg; (очень широкое) и 30&deg; (узкое)
-	  4.0f / 3.0f,       // Отношение сторон. Зависит от размеров вашего окна. Заметьте, что 4/3 == 800/600 == 1280/960
-	  0.1f,              // Ближняя плоскость отсечения. Должна быть больше 0.
-	  100.0f             // Дальняя плоскость отсечения.
-  );
-  // Или, для ортокамеры
-  glm::mat4 view = glm::lookAt(///< местоположение и то куда смотрит камера
-	  glm::vec3(0, 0, 1),      // Камера находится в мировых координатах (4,3,3)
-	  glm::vec3(0, 0, 0),      // И направлена в начало координат
-	  glm::vec3(0, 1, 0)       // "Голова" находится сверху
-  );
-  // Матрица модели : единичная матрица (Модель находится в начале координат)
-  glm::mat4 model = glm::mat4(1.0f);// Индивидуально для каждой модели
+  Camera camera(app.getWindow()->getWindowSize());
+  camera.moveTo({0, 0, 1});
+  camera.lookAt({0, 0, 0});
 
-  glm::mat4 MVPmatrix = projection * view * model;/// именно в этом порядке иначе смэрть
   LOG_SCOPE_F(INFO, "Runtime");
   while (!app.shouldClose) {
 	Renderer::clear({0.16, 0.36, 0.42, 0});///< отчисляем экран указаным цветом
 	if (selected_optionX < 3) {
-	  view = glm::lookAt(
-		  glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
-		  glm::vec3(0, 0, 0),// И направлена в начало координат
-		  glm::vec3(0, 1, 0) // "Голова" находится сверху
-	  );
-	  model = glm::mat4(1.0f);              // Индивидуально для каждой модели
-	  MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+	  camera.moveTo({0, 0, 1});
+	  camera.lookAt({0, 0, 0});
 	}
 
 	lShader.bind();
-	lShader.setUniformMat4f("u_MVP", MVPmatrix);
+	lShader.setUniformMat4f("u_MVP", camera.getMVP());
 
 	switch (selected_optionX) {
 	  case 0:
@@ -252,51 +236,38 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		float camX = sin(glfwGetTime()) * radius;
 		float camY = cos(glfwGetTime()) * radius;
 		float camZ = tan(glfwGetTime()) * camY + camX;
-		view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		camera.moveTo({camX, camY, camZ});
 		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  }
 	  case 4:
-		view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-		model = glm::rotate(model, 0.001f, {0, 0, 1});
+		camera.lookAt({0, 0, 0});
+		camera.moveTo({0, 0, 3});
+		camera.setModel(glm::rotate(camera.getModel(), 0.001f, {0, 0, 1}));
 		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  case 5:
 		uShader.bind();
-		uShader.setUniformMat4f("u_MVP", MVPmatrix);
+		uShader.setUniformMat4f("u_MVP", camera.getMVP());
 		uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
-		view = glm::lookAt(
-			glm::vec3(0, 0, 1),// Камера находится в мировых координатах (4,3,3)
-			glm::vec3(0, 0, 0),// И направлена в начало координат
-			glm::vec3(0, 1, 0) // "Голова" находится сверху
-		);
-		model = glm::scale(glm::mat4(1.0f), glm::vec3(r*0.4));
-		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		camera.moveTo({0, 0, 1});
+		camera.lookAt({0, 0, 0});
+		camera.setModel(glm::scale(glm::mat4(1.0f), glm::vec3(r * 0.4)));
 		Renderer::draw(&objHyperboloid, &uShader);
 		break;
 
 	  case 6:
-		view = glm::lookAt(
-			glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
-			glm::vec3(0, 0, 0),// И направлена в начало координат
-			glm::vec3(0, 1, 0) // "Голова" находится сверху
-		);
-		model = glm::mat4(1.0f);              // Индивидуально для каждой модели
-		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		camera.moveTo({0, 0, 3});
+		camera.lookAt({0, 0, 0});
+		camera.setModel(glm::mat4(1.0f));     // Индивидуально для каждой модели
 		Renderer::draw(&objCube, &lShader);
 		break;
 
 	  case 7:
 		lShader.bind();
-		view = glm::lookAt(
-			glm::vec3(0, 0, 2),// Камера находится в мировых координатах (4,3,3)
-			glm::vec3(0, 0, 0),// И направлена в начало координат
-			glm::vec3(0, 1, 0) // "Голова" находится сверху
-		);
-		model = glm::rotate(model, 0.004f, {0, 1, 0});
-		MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+		camera.moveTo({0, 0, 2});
+		camera.lookAt({0, 0, 0});
+		camera.setModel(glm::rotate(camera.getModel(), 0.004f, {0, 1, 0}));
 		Renderer::draw(&cone0, &lShader);
 		Renderer::draw(&cone1, &lShader);
 		Renderer::draw(&cone2, &lShader);

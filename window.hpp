@@ -8,14 +8,19 @@
 class Window {
  private:
   GLFWwindow *window;
+  glm::vec2 windowSize{};
 
  public:
+  const glm::vec2 &getWindowSize() const {
+	return windowSize;
+  }
+
   [[nodiscard]] GLFWwindow *getGLFWWindow() const {
 	return window;
   }
 
- public:
   Window(glm::vec2 size) {
+	windowSize=size;
 	glfwSetErrorCallback(glfwErrorHandler);
 	if (!glfwInit()) {
 	  LOG_S(FATAL) << "GLFW INIT FAILED";
