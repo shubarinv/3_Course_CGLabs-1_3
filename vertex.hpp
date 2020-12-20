@@ -29,6 +29,7 @@ class Vertex {
 	setColor(_color);
   }
 
+  glm::vec3 normal{};
  private:
   glm::vec3 color{};
   /**

@@ -63,6 +63,9 @@ class Shader {
   void setUniform4f(const std::string &name, glm::vec4 vec4) {
 	glCall(glUniform4f(getUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w));
   }
+  void setUniform3f(const std::string &name, glm::vec3 vec3) {
+	glCall(glUniform3f(getUniformLocation(name), vec3.x, vec3.y, vec3.z));
+  }
   /**
   * @brief Sets uniform with mat4
   * @param name name of the uniform

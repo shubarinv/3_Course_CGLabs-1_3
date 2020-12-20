@@ -6,13 +6,28 @@
 
 #include "../application.hpp"
 #include "../camera.hpp"
+#include "../light.hpp"
 #include "../renderer.hpp"
-#include "../shader.hpp"
-#include "../texture.hpp"
-#include "../window.hpp"
+
+std::vector<glm::vec3> getCoordsForVertices(double xc, double yc, double size, int n) {
+  std::vector<glm::vec3> vertices;
+  auto xe = xc + size;
+  auto ye = yc;
+  vertices.emplace_back(xe, yc, ye);
+  double alpha = 0;
+  for (int i = 0; i < n - 1; i++) {
+	alpha += 2 * M_PI / n;
+	auto xr = xc + size * cos(alpha);
+	auto yr = yc + size * sin(alpha);
+	xe = xr;
+	ye = yr;
+	vertices.emplace_back(xe, yc, ye);
+  }
+  return vertices;
+}
 int selected_optionX = 0;
 int selected_optionY = 0;
-void programQuit(int key, int action, Application *app) {
+void programQuit([[maybe_unused]] int key, [[maybe_unused]] int action, Application *app) {
   app->close();
   LOG_S(INFO) << "Quiting...";
 }
@@ -51,13 +66,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   app.registerKeyCallback(GLFW_KEY_DOWN, changeDrawMode);
   Application::setOpenGLFlags();
 
-  Shader lShader("../resources/shaders/basic_w_layout.glsl");
+  Shader lShader("../playground/lighting.glsl");
+  Shader normalShader("../resources/shaders/basic_w_layout.glsl");
   lShader.bind();
   Camera camera(app.getWindow()->getWindowSize());
-//003
-  camera.moveTo({0,0,3});
+  camera.moveTo({0, 0, 3});
   camera.lookAt({0, 0, 0});
-
+  Light light(-1);
   Object testObj;
 
   testObj.setVertexBuffer({
@@ -143,15 +158,42 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 						  3, 2, 6, 6, 7, 3});
 
   testObj.init();
-
-
+  auto objVertices = testObj.getVertexBuffer()->getVertices();
+  auto objNormals = testObj.getNormals();
+  std::vector<Vertex> normalsVertices;
+  for (int i = 0; i < objVertices.size(); i++) {
+	normalsVertices.push_back(Vertex({objVertices[i].getPosition()}, {1, 0, 0}));
+	normalsVertices.push_back(Vertex({objVertices[i].getPosition() + glm::vec3(0.5, 0.5, 0.5) * objNormals[i]}, {1, 0, 0}));
+  }
+  std::vector<unsigned int> normalsIndices;
+  normalsIndices.reserve(normalsVertices.size());
+  for (int i = 0; i < normalsVertices.size(); ++i) {
+	normalsIndices.emplace_back(i);
+  }
+  Object normals;
+  normals.setVertexBuffer(normalsVertices);
+  normals.setIndexBuffer(normalsIndices);
+  normals.init(false);
+  std::vector<glm::vec3> cameraPositions=getCoordsForVertices(0,0,2,600);/// координаты для точек гиперболойды
+  int cameraPosition{0};
   while (!app.shouldClose) {
-	camera.setModel(glm::rotate(camera.getModel(), 0.006f, {0, 1, 1}));
-	lShader.setUniformMat4f("u_MVP", camera.getMVP());
+	//camera.setModel(glm::rotate(camera.getModel(), 0.006f, {1, 1, 0}));
+	lShader.bind();
+	lShader.setUniformMat4f("model", camera.getModel());
+	lShader.setUniformMat4f("view", camera.getView());
+	lShader.setUniformMat4f("projection", camera.getProjection());
+	lShader.setUniform3f("lightPos", cameraPositions[cameraPosition]);
+	lShader.setUniform3f("lightColor", {0, 1, 1});
+	normalShader.bind();
+	normalShader.setUniformMat4f("u_MVP", camera.getMVP());
 	Renderer::clear();
 
 	Renderer::draw(&testObj, &lShader);
-	
+	Renderer::draw(&normals, &normalShader, GL_LINES);
+	cameraPosition++;
+	if (cameraPosition >= cameraPositions.size()) {
+	  cameraPosition = 0;
+	}
 	switch (selected_optionY) {
 	  case 0:
 		glCall(glDisable(GL_DEPTH_TEST));

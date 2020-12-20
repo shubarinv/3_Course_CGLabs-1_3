@@ -25,6 +25,18 @@ class ColorBuffer : public Buffer {
 	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW));
 	LOG_S(INFO) << "ColorBuffer created rendererID: " << rendererID;
   }
+  explicit ColorBuffer(const std::vector<glm::vec3> &_vertices) {
+	std::vector<GLfloat> vertices;
+	for (auto &vector : _vertices) {
+	  vertices.push_back(vector.r);
+	  vertices.push_back(vector.g);
+	  vertices.push_back(vector.b);
+	}
+	glCall(glGenBuffers(1, &rendererID));
+	glCall(glBindBuffer(GL_ARRAY_BUFFER, rendererID));
+	glCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW));
+	LOG_S(INFO) << "ColorBuffer created rendererID: " << rendererID;
+  }
 
   ~ColorBuffer() {
 	glCall(glDeleteBuffers(1, &rendererID));

@@ -13,7 +13,7 @@ class VertexBuffer : public Buffer {
   std::vector<Vertex> vertices_vec;
 
  public:
-  [[nodiscard]] const std::vector<Vertex> &getVertices() const {
+  [[nodiscard]] std::vector<Vertex> &getVertices() {
 	return vertices_vec;
   }
 

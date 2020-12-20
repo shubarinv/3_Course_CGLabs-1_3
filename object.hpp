@@ -156,7 +156,7 @@ class Object {
   /**
    * @brief initializes object with data that have been passed to it previously.
    */
-  [[maybe_unused]] void init() {
+  [[maybe_unused]] void init(bool bGenerateNormals = true) {
 	if (vertexBuffer == nullptr) {
 	  throw std::runtime_error("Object init failed");
 	}
@@ -169,6 +169,17 @@ class Object {
 	  vertexArray->addBuffer(*vertexBuffer, *bufferLayout);
 	  if (colorBuffer != nullptr) {
 		vertexArray->addBuffer(*colorBuffer, *bufferLayout, 1);
+	  }
+	  if (bGenerateNormals) {
+		generateNormals();
+
+		std::vector<glm::vec3> normals{};
+		for (auto &vertex : vertexBuffer->getVertices()) {
+		  normals.push_back(vertex.normal);
+		}
+		ColorBuffer *normalBuffer = new ColorBuffer(normals);
+		bufferLayout->push<float>(layoutLength);
+		vertexArray->addBuffer(*normalBuffer, *bufferLayout, 2);
 	  }
 	  delete (bufferLayout);
 	} else {
@@ -185,16 +196,47 @@ class Object {
 	  delete (textureCoordsLayout);
 	  delete (textureVertexBuffer);
 	}
+
 	bInitialized = true;
+  }
+  void generateNormals() {
+	for (unsigned int i = 0; i < indexBuffer->getLength(); i += 3) {
+	  unsigned int Index0 = indexBuffer->getIndices()[i];
+	  unsigned int Index1 = indexBuffer->getIndices()[i + 1];
+	  unsigned int Index2 = indexBuffer->getIndices()[i + 2];
+	  glm::vec3 v1 = vertexBuffer->getVertices()[Index1].getPosition() - vertexBuffer->getVertices()[Index0].getPosition();
+	  glm::vec3 v2 = vertexBuffer->getVertices()[Index2].getPosition() - vertexBuffer->getVertices()[Index0].getPosition();
+	  glm::vec3 Normal = glm::cross(v1, v2);//v1.Cross(v2);
+	  Normal = glm::normalize(Normal);
+
+	  vertexBuffer->getVertices()[Index0].normal += Normal;
+	  vertexBuffer->getVertices()[Index1].normal += Normal;
+	  vertexBuffer->getVertices()[Index2].normal += Normal;
+	}
+
+	for (unsigned int i = 0; i < vertexBuffer->getVertices().size(); i++) {
+	  vertexBuffer->getVertices()[i].normal = glm::normalize(vertexBuffer->getVertices()[i].normal);
+	}
   }
   void draw() {
 	if (texture != nullptr) texture->bind();
   }
+  std::vector<glm::vec3> getNormals() {
+	std::vector<glm::vec3> normals;
+	for (auto &vertex : vertexBuffer->getVertices()) {
+	  normals.push_back(vertex.normal);
+	}
+	return normals;
+  }
+
   ~Object() {
 	LOG_SCOPE_F(INFO, "Object destruction");
 	delete (colorBuffer);
 	delete (vertexBuffer);
 	delete (vertexArray);
+  }
+  VertexBuffer *getVertexBuffer() {
+	return vertexBuffer;
   }
 };
 
