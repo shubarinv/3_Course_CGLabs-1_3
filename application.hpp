@@ -6,6 +6,7 @@
 #define CGLABS__APPLICATION_HPP_
 
 #include <map>
+
 #include "window.hpp"
 
 class Application {

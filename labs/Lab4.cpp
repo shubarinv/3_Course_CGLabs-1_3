@@ -4,11 +4,12 @@
 
 #define GL_SILENCE_DEPRECATION
 
-#include "../window.hpp"
-#include "../shader.hpp"
-#include "../renderer.hpp"
-#include "../texture.hpp"
 #include "../application.hpp"
+#include "../camera.hpp"
+#include "../renderer.hpp"
+#include "../shader.hpp"
+#include "../texture.hpp"
+#include "../window.hpp"
 int selected_optionX = 0;
 int selected_optionY = 0;
 void programQuit(int key, int action, Application *app) {
@@ -42,7 +43,7 @@ void changeTask(int key, int action, [[maybe_unused]] Application *app) {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Application app;
-  app.init();
+  app.init({720, 480}, argc, argv);
   app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
   app.registerKeyCallback(GLFW_KEY_LEFT, changeTask);
   app.registerKeyCallback(GLFW_KEY_RIGHT, changeTask);
@@ -50,90 +51,126 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   app.registerKeyCallback(GLFW_KEY_DOWN, changeDrawMode);
   Application::setOpenGLFlags();
 
-  Shader tShader("../resources/shaders/basic_w_texture.glsl");
-  glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-  glCall(glEnable(GL_BLEND));
-  //glCall(glEnable(GL_CULL_FACE));
-  glCall(glEnable(GL_MULTISAMPLE));
-  glCall(glEnable(GL_DEPTH_TEST));
-  glCall(glDepthFunc(GL_LESS));
-  tShader.bind();
-  glm::mat4 projection = glm::perspective(
-	  glm::radians(90.f),// Вертикальное поле зрения в радианах. Обычно между 90&deg; (очень широкое) и 30&deg; (узкое)
-	  4.0f / 3.0f,       // Отношение сторон. Зависит от размеров вашего окна. Заметьте, что 4/3 == 800/600 == 1280/960
-	  0.1f,              // Ближняя плоскость отсечения. Должна быть больше 0.
-	  100.0f             // Дальняя плоскость отсечения.
-  );
-  // Или, для ортокамеры
-  glm::mat4 view = glm::lookAt(
-	  glm::vec3(0, 0, 3),// Камера находится в мировых координатах (4,3,3)
-	  glm::vec3(0, 0, 0),// И направлена в начало координат
-	  glm::vec3(0, 1, 0) // "Голова" находится сверху
-  );
-  // Матрица модели : единичная матрица (Модель находится в начале координат)
-  glm::mat4 model = glm::mat4(1.0f);// Индивидуально для каждой модели
-
-  glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
+  Shader lShader("../resources/shaders/basic_w_layout.glsl");
+  lShader.bind();
+  Camera camera(app.getWindow()->getWindowSize());
+//003
+  camera.moveTo({0,0,3});
+  camera.lookAt({0, 0, 0});
 
   Object testObj;
 
   testObj.setVertexBuffer({
-							  Vertex({-1.0, -1.0, 1.0,}),
-							  Vertex({-1.0, 1.0, 1.0,}),
-							  Vertex({1.0, 1.0, 1.0,}),
-							  Vertex({1.0, -1.0, 1.0,}),
-							  Vertex({-1.0, -1.0, -1.0,}),
-							  Vertex({-1.0, 1.0, -1.0,}),
-							  Vertex({1.0, 1.0, -1.0,}),
-							  Vertex({1.0, -1.0, -1.0,}),
-						  });
-  testObj.setIndexBuffer({
-							 0, 1, 2,
-							 2, 3, 0,
-							 // right
-							 1, 5, 6,
-							 6, 2, 1,
-							 // back
-							 7, 6, 5,
-							 5, 4, 7,
-							 // left
-							 4, 0, 3,
-							 3, 7, 4,
-							 // bottom
-							 4, 5, 1,
-							 1, 0, 4,
-							 // top
-							 3, 2, 6,
-							 6, 7, 3});
+	  ///< Координаты для куба и его цвет
+	  Vertex({
+				 -1.0,
+				 -1.0,
+				 1.0,
+			 },
+			 {1.0, 0.0, 0.0}),
+	  Vertex({
+				 1.0,
+				 -1.0,
+				 1.0,
+			 },
+			 {
+				 0.0,
+				 1.0,
+				 0.0,
+			 }),
+	  Vertex({
+				 1.0,
+				 1.0,
+				 1.0,
+			 },
+			 {
+				 0.0,
+				 0.0,
+				 1.0,
+			 }),
+	  Vertex({
+				 -1.0,
+				 1.0,
+				 1.0,
+			 },
+			 {
+				 1.0,
+				 1.0,
+				 1.0,
+			 }),
+	  Vertex({
+				 -1.0,
+				 -1.0,
+				 -1.0,
+			 },
+			 {
+				 1.0,
+				 0.0,
+				 0.0,
+			 }),
+	  Vertex({
+				 1.0,
+				 -1.0,
+				 -1.0,
+			 },
+			 {
+				 0.0,
+				 1.0,
+				 0.0,
+			 }),
+	  Vertex({
+				 1.0,
+				 1.0,
+				 -1.0,
+			 },
+			 {
+				 0.0,
+				 0.0,
+				 1.0,
+			 }),
+	  Vertex({-1.0, 1.0, -1.0}, {1.0, 1.0, 1.0}),
+  });
+  testObj.setIndexBuffer({0, 1, 2, 2, 3, 0,///< то в каком порядке будут отрисовываться вершины куба
+						  // right
+						  1, 5, 6, 6, 2, 1,
+						  // back
+						  7, 6, 5, 5, 4, 7,
+						  // left
+						  4, 0, 3, 3, 7, 4,
+						  // bottom
+						  4, 5, 1, 1, 0, 4,
+						  // top
+						  3, 2, 6, 6, 7, 3});
 
-  testObj.setTexture("../resources/textures/wood.png");
   testObj.init();
-  tShader.setUniform1i("u_Texture", 0);
 
-  tShader.setUniformMat4f("u_MVP", MVPmatrix);
+
   while (!app.shouldClose) {
-	model = glm::rotate(model, 0.006f, {0, 1, 1});
-	glm::mat4 MVPmatrix = projection * view * model;// Запомните! В обратном порядке!
-	tShader.setUniformMat4f("u_MVP", MVPmatrix);
+	camera.setModel(glm::rotate(camera.getModel(), 0.006f, {0, 1, 1}));
+	lShader.setUniformMat4f("u_MVP", camera.getMVP());
 	Renderer::clear();
 
-	Renderer::draw(&testObj, &tShader);
+	Renderer::draw(&testObj, &lShader);
+	
 	switch (selected_optionY) {
-	  case 0: glCall(glDisable(GL_DEPTH_TEST));
+	  case 0:
+		glCall(glDisable(GL_DEPTH_TEST));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
 	  case 1:
 		// Включить тест глубины
-	  glCall(glEnable(GL_DEPTH_TEST));
+		glCall(glEnable(GL_DEPTH_TEST));
 		// Фрагмент будет выводиться только в том, случае, если он находится ближе к камере, чем предыдущий
 		glDepthFunc(GL_LESS);
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 		break;
-	  case 2: glCall(glPointSize(10));
+	  case 2:
+		glCall(glPointSize(10));
 		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_POINT));
 		break;
 
-	  case 3: glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+	  case 3:
+		glCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 		break;
 
 	  default: break;
@@ -143,7 +180,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
 	/* Poll for and process events */
 	glfwPollEvents();
-
   }
   glfwTerminate();
   return 0;

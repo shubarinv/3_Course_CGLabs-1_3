@@ -5,7 +5,8 @@
 #ifndef CGLABS__C_MAP_TEXTURE_HPP_
 #define CGLABS__C_MAP_TEXTURE_HPP_
 
-class CMapTexture : public Buffer {
+
+class [[deprecated("DOES NOT WORK. NEEDS REWRITE")]] CMapTexture : public Buffer {
  private:
   unsigned int rendererID{};
   std::string filepath{};
@@ -53,10 +54,10 @@ class CMapTexture : public Buffer {
 	unsigned error = lodepng::decode(localBuffer, width, height, _filepath);
 	// If there's an error, display it.
 	if (error != 0) {
-	  spdlog::error("Texture ({}) load error {}: {}", _filepath, error, lodepng_error_text(error));
+	  LOG_S(ERROR) <<"Texture ("<<_filepath<<") load error "<< error<<": "<<lodepng_error_text(error);
 	  throw;
 	}
-	spdlog::info("Texture loaded successfully!");
+	LOG_S(INFO) <<"Texture loaded successfully!";
   }
   std::vector<std::string> generateFilePaths() {
 	std::vector<std::string> paths;

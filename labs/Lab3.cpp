@@ -259,7 +259,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  case 6:
 		camera.moveTo({0, 0, 3});
 		camera.lookAt({0, 0, 0});
-		camera.setModel(glm::mat4(1.0f));     // Индивидуально для каждой модели
+		camera.setModel(glm::mat4(1.0f));// Индивидуально для каждой модели
 		Renderer::draw(&objCube, &lShader);
 		break;
 
