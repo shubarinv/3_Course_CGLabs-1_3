@@ -1,15 +1,11 @@
 #define GL_SILENCE_DEPRECATION
-#include <spdlog/spdlog.h>
 
 #include <random>
 
 #include "../Buffers/color_buffer.hpp"
 #include "../Buffers/index_buffer.hpp"
+#include "../camera.hpp"
 #include "../renderer.hpp"
-#include "../shader.hpp"
-#include "../vertex.hpp"
-#include "../Buffers/vertex_array.hpp"
-#include "../Buffers/vertex_buffer.hpp"
 #include "../window.hpp"
 
 template<typename Numeric, typename Generator = std::mt19937>
@@ -27,35 +23,34 @@ Numeric random(Numeric from, Numeric to) {
 int selected_optionX = 0;
 int selected_optionY = 0;
 void handleKeyboard(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
-  spdlog::info("Keyboard callback ");
+
   if ((key == GLFW_KEY_Q && action == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
-	spdlog::info("Got quit command, destroying window");
+
 	glfwDestroyWindow(window);
-	spdlog::info("Quiting...");
+
 	glfwTerminate();
 	exit(0);
   }
   if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
 	selected_optionY--;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
+
   }
   if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
 
 	selected_optionY++;
-	spdlog::info("selected_optionY is now {}", selected_optionY);
+
   }
   if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
 	selected_optionX--;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
+
   }
   if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
 	selected_optionX++;
-	spdlog::info("selected_optionX is now {}", selected_optionX);
+
   }
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  spdlog::info("App stated!");
   Window window({640, 640});
   Shader lShader("../resources/shaders/basic_w_layout.glsl");  ///< use this shader when you want to use layouts
   Shader uShader("../resources/shaders/basic_w_uniforms.glsl");///< use this shader when you want to use uniforms
@@ -105,11 +100,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   float r         = 0.0f;
   float increment = 0.05f;
   /* Loop until the user closes the window */
-  glfwSetKeyCallback(window.getWindow(), handleKeyboard);
-  while (!glfwWindowShouldClose(window.getWindow())) {
-	window.updateFpsCounter();
+  glfwSetKeyCallback(window.getGLFWWindow(), handleKeyboard);
+  Camera camera({640, 640});
+  camera.moveTo({0,0,1});
+  camera.lookAt({0,0,0});
+  while (!glfwWindowShouldClose(window.getGLFWWindow())) {
 	Renderer::clear();
 	uShader.bind();
+	uShader.setUniformMat4f("u_MVP",camera.getMVP());
 	uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
 	vertexArray.bind();
 	switch (selected_optionX) {
@@ -145,6 +143,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		break;
 	  case 10:
 		lShader.bind();
+		lShader.setUniformMat4f("u_MVP",camera.getMVP());
 		vertexArrayPoints.bind();
 		glPointSize(4);
 		Renderer::draw(&vertexArrayPoints, &index_buffer10, &lShader, GL_POINTS);
@@ -173,12 +172,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  increment = 0.05f;
 	r += increment;
 	/* Swap front and back buffers */
-	glfwSwapBuffers(window.getWindow());
+	glfwSwapBuffers(window.getGLFWWindow());
 
 	/* Poll for and process events */
 	glfwPollEvents();
   }
-  window.destroy();
-  spdlog::info("Program finished");
   return 0;
 }
