@@ -148,7 +148,7 @@ endif()
 
 # Platform-independent (almost) application libraries
 if(NOT CORRADE_TARGET_ANDROID)
-    option(WITH_GLFWAPPLICATION "Build GlfwApplication library" ON)
+    option(WITH_GLFWAPPLICATION "Build GlfwApplication library" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 
