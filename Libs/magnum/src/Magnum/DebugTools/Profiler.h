@@ -76,7 +76,7 @@ sections.bufferSwap = p.addSection("Buffer swap");
 p.enable();
 
 // Mark sections in draw function
-void lab2::drawEvent() {
+void lab4::drawEvent() {
     p.start();
 
     // ... misc stuff belonging to "Other" section

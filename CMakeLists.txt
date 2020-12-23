@@ -19,12 +19,14 @@ add_subdirectory(Libs/corrade EXCLUDE_FROM_ALL)
 set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
 set(WITH_SDL2APPLICATION OFF CACHE BOOL "" FORCE)
 add_subdirectory(Libs/magnum EXCLUDE_FROM_ALL)
-find_package(Magnum REQUIRED GL Shaders GlfwApplication)
+find_package(Magnum REQUIRED GL Shaders GlfwApplication Primitives Trade)
 
-add_executable(${PROJECT_NAME} lab2.cpp vertex.hpp mesh.hpp) # change lab here
+add_executable(${PROJECT_NAME} lab4.cpp vertex.hpp mesh.hpp) # change lab here
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Magnum::Application
         Magnum::GL
         Magnum::Shaders
+        Magnum::Primitives
+        Magnum::Trade
         Magnum::Magnum)

@@ -65,7 +65,7 @@ governed by browser and you can't do anything about it.
 Example usage:
 
 @code{.cpp}
-lab2::lab2(const Arguments& arguments): Platform::Application{arguments} {
+lab4::lab4(const Arguments& arguments): Platform::Application{arguments} {
     // Initialization ...
 
     // Enable VSync or set minimal loop period for the application, if
@@ -74,7 +74,7 @@ lab2::lab2(const Arguments& arguments): Platform::Application{arguments} {
     timeline.start();
 }
 
-void lab2::drawEvent() {
+void lab4::drawEvent() {
     // Distance of object travelling at speed of 15 units per second
     Float distance = 15.0f*timeline.previousFrameDuration();
 

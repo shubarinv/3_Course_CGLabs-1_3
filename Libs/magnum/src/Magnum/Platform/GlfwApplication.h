@@ -87,7 +87,7 @@ with these four commands:
 mkdir build && cd build
 cmake ..
 cmake --build .
-./src/lab2 # or ./src/Debug/lab2
+./src/lab4 # or ./src/Debug/lab4
 @endcode
 
 See @ref cmake for more information.
@@ -132,10 +132,10 @@ on the screen. The subclass can be then used directly in @cpp main() @ce
 for more information.
 
 @code{.cpp}
-class lab2: public Platform::GlfwApplication {
+class lab4: public Platform::GlfwApplication {
     // implement required methods...
 };
-MAGNUM_GLFWAPPLICATION_MAIN(lab2)
+MAGNUM_GLFWAPPLICATION_MAIN(lab4)
 @endcode
 
 If no other application header is included, this class is also aliased to
