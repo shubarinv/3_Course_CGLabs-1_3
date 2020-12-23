@@ -11,17 +11,23 @@ class Vertex {
   Vector3 position{};
   Color3 color{};
 
+
  public:
+  Vector3 normal{};
   Vertex(Vector3 _position, Color3 _color) {
 	position = _position;
 	color = _color;
   }
+   [[nodiscard]] Vector3 getPosition() const {
+	return position;
+  }
   struct triangleVertex {
 	Vector3 position;
-	Color3 color;
+//	Color3 color;
+	Vector3 normal;
   };
   triangleVertex getStruct() {
-	return {position, color};
+	return {position,normal};
   }
 };
 
