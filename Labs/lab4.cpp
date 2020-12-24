@@ -26,7 +26,7 @@ class lab4 : public Platform::Application {
   typedef Magnum::Platform::GlfwApplication::KeyEvent::Key Key;
 
  public:
-  explicit lab4(const Arguments& arguments) : Platform::Application{arguments, Configuration{}.setTitle("Lab 2")} {
+  explicit lab4(const Arguments& arguments) : Platform::Application{arguments, Configuration{}.setTitle("Lab 4")} {
 
 	logInit(arguments.argc, arguments.argv);
 	setWindowSize({640, 640});
@@ -54,7 +54,7 @@ class lab4 : public Platform::Application {
 		* Matrix4::translation(Vector3::zAxis(-10.0f));
 	color = Color3::fromHsv({Math::Deg(35.0f), 1.0f, 1.0f});
 
-	lights.addLight({{0, 0, 200}, {0.8, 0.8, 0.8}, "t1_1"});
+	lights.addLight({{0, 0, 10}, {0.8, 0.8, 0.8}, "t1_1"});
 	shader = Shaders::Phong({}, lights.countEnabledLights());
   }
 
@@ -65,6 +65,9 @@ class lab4 : public Platform::Application {
 
 	if (shader.lightCount() != lights.countEnabledLights()) {
 	  shader = Shaders::Phong({}, lights.countEnabledLights());
+	}
+	if(selectedTask==1){
+	  lights.lookForTheLight("t1_1")->color={0.8f,0.8f,0.8f};
 	}
 	shader.setLightPositions(lights.getPositions())
 		.setLightColors(lights.getColors())
@@ -124,14 +127,26 @@ class lab4 : public Platform::Application {
 	  }
 	  LOG_S(INFO) << "Selected task: " << selectedTask;
 	}
+	if (event.key() == Key::W) {if (selectedTask == 1) {
+		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x(), lights.lookForTheLight("t1_1")->position.y(), lights.lookForTheLight("t1_1")->position.z()- 0.5f};
+	  }}
+	if (event.key() == Key::S) {if (selectedTask == 1) {
+		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x(), lights.lookForTheLight("t1_1")->position.y(), lights.lookForTheLight("t1_1")->position.z()+ 0.5f};
+	  }}
 	if (event.key() == Key::A) {
 	  if (selectedTask == 0) {
 		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() - 0.05f};
+	  }
+	  if (selectedTask == 1) {
+		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x()- 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
 	}
 	if (event.key() == Key::D) {
 	  if (selectedTask == 0) {
 		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() + 0.05f};
+	  }
+	  if (selectedTask == 1) {
+		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x()+ 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
 	}
   }
