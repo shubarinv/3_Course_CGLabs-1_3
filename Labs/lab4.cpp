@@ -31,12 +31,15 @@ class lab4 : public Platform::Application {
 
 	logInit(arguments.argc, arguments.argv);
 	setWindowSize({640, 640});
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 	GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+	GL::Renderer::enable(GL::Renderer::Feature::Multisampling);
 	lightCoords = getCoordsForLight(0, 0, 4, 400);
 
 	Trade::MeshData sphere = Primitives::uvSphereSolid(20, 20);
 	Trade::MeshData pyramid = Primitives::coneSolid(20, 20, 1.f);
+	Trade::MeshData cube = Primitives::cubeSolid();
 
 	GL::Buffer vertices_sphere;
 	vertices_sphere.setData(MeshTools::interleave(sphere.positions3DAsArray(), sphere.normalsAsArray()));
@@ -50,6 +53,12 @@ class lab4 : public Platform::Application {
 	GL::Buffer indices_pyramid;
 	indices_pyramid.setData(compressed_pyramid.first);
 
+	GL::Buffer vertices_cube;
+	vertices_cube.setData(MeshTools::interleave(cube.positions3DAsArray(), cube.normalsAsArray()));
+	std::pair<Containers::Array<char>, MeshIndexType> compressed_cube = MeshTools::compressIndices(cube.indicesAsArray());
+	GL::Buffer indices_cube;
+	indices_cube.setData(compressed_cube.first);
+
 	mesh_sphere.setPrimitive(sphere.primitive())
 		.setCount(sphere.indexCount())
 		.addVertexBuffer(std::move(vertices_sphere), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
@@ -59,6 +68,11 @@ class lab4 : public Platform::Application {
 		.setCount(pyramid.indexCount())
 		.addVertexBuffer(std::move(vertices_pyramid), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
 		.setIndexBuffer(std::move(indices_pyramid), 0, compressed_pyramid.second);
+
+	mesh_cube.setPrimitive(cube.primitive())
+		.setCount(cube.indexCount())
+		.addVertexBuffer(std::move(vertices_cube), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+		.setIndexBuffer(std::move(indices_cube), 0, compressed_cube.second);
 
 	transformation =
 		Matrix4::rotationX(Math::Deg(30.0f)) * Matrix4::rotationY(Math::Deg(40.0f));
@@ -71,9 +85,9 @@ class lab4 : public Platform::Application {
 	lights.addLight({{0, 0, 10}, {0.8, 0.8, 0.8}, "t1_1"});
 	lights.addLight({{10, 0, 0}, {0.8, 0, 0.8}, "t3_1"});
 	lights.addLight({{-10, 0, 10}, {0.8, 0.8, 0}, "t3_2"});
+	lights.addLight({{-10, 0, 10}, {0.8, 0.8, 0}, "t4_1"});
 	shader = Shaders::Phong({}, lights.countEnabledLights());
   }
-
   /// Variables and functions
  private:
   void drawEvent() override {
@@ -83,6 +97,7 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t1_1")->enable();
 	  lights.lookForTheLight("t3_1")->disable();
 	  lights.lookForTheLight("t3_2")->disable();
+	  lights.lookForTheLight("t4_1")->disable();
 	  shader.draw(mesh_sphere);
 	}
 	if (selectedTask == 1) {
@@ -90,13 +105,23 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t1_1")->color = {0.8f, 0.8f, 0.8f};
 	  lights.lookForTheLight("t3_1")->disable();
 	  lights.lookForTheLight("t3_2")->disable();
+	  lights.lookForTheLight("t4_1")->disable();
 	  shader.draw(mesh_sphere);
 	}
 	if (selectedTask == 2) {
 	  lights.lookForTheLight("t1_1")->disable();
 	  lights.lookForTheLight("t3_1")->enable();
 	  lights.lookForTheLight("t3_2")->enable();
+	  lights.lookForTheLight("t4_1")->disable();
 	  shader.draw(mesh_pyramid);
+	}
+	if (selectedTask == 3) {
+	  lights.lookForTheLight("t1_1")->disable();
+	  lights.lookForTheLight("t3_1")->disable();
+	  lights.lookForTheLight("t3_2")->disable();
+	  lights.lookForTheLight("t4_1")->enable();
+	  shader.draw(mesh_cube);
+	  lights.lookForTheLight("t4_1")->position=lightCoords[currentLightPosition];
 	}
 
 	if (shader.lightCount() != lights.countEnabledLights()) {
@@ -110,23 +135,34 @@ class lab4 : public Platform::Application {
 		.setTransformationMatrix(transformation)
 		.setNormalMatrix(transformation.normalMatrix())
 		.setProjectionMatrix(projection);
-	currentLightPosition++;
-	if (currentLightPosition > lightCoords.size()) {
+	currentLightPosition=currentLightPosition+lightMovementSpeed;
+//	LOG_S(INFO) << "A: Current lightPosition: "<<currentLightPosition;
+	if (currentLightPosition >= (int)lightCoords.size()) {
+//	  LOG_S(INFO) << "Zeroing currentLightPosition: "<<currentLightPosition<<" | "<<lightCoords.size();
 	  currentLightPosition = 0;
+
 	}
+	if (currentLightPosition < 0) {
+//	  LOG_S(INFO) << "Moving currentLightPosition to array end: "<<currentLightPosition;
+	  currentLightPosition = lightCoords.size()-currentLightPosition-Math::abs(lightMovementSpeed);
+	}
+//	LOG_S(INFO) << "B: Current lightPosition: "<<currentLightPosition;
 	swapBuffers();
 	redraw();
   }
 
   GL::Mesh mesh_sphere;
   GL::Mesh mesh_pyramid;
+  GL::Mesh mesh_cube;
   Shaders::Phong shader;
   Matrix4 transformation, projection;
   Color3 color;
   Lights lights;
+  int lightMovementSpeed ={1};
   unsigned int selectedTask{0};
   std::vector<Vector3> lightCoords;
   int currentLightPosition{0};
+
   static std::vector<Vector3> getCoordsForLight(double xc, double yc, double size, int n) {
 	std::vector<Vector3> vertices;
 	auto xe = xc + size;
@@ -178,6 +214,9 @@ class lab4 : public Platform::Application {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x() - 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
+	  if(selectedTask == 3) {
+		lightMovementSpeed--;
+	  }
 	}
 	if (event.key() == Key::D) {
 	  if (selectedTask == 0) {
@@ -186,6 +225,9 @@ class lab4 : public Platform::Application {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x() + 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
+	  if(selectedTask == 3) {
+		lightMovementSpeed++;
+	  }
 	}
 	if (event.key() == Key::Y) {
 	  if (selectedTask == 2) {
@@ -193,10 +235,6 @@ class lab4 : public Platform::Application {
 			{lights.lookForTheLight("t3_1")->color.rgb().r() - 0.05f,
 			 0,
 			 lights.lookForTheLight("t3_1")->color.rgb().b() - 0.05f};
-		lights.lookForTheLight("t3_2")->color =
-			{lights.lookForTheLight("t3_2")->color.rgb().r() - 0.05f,
-			 lights.lookForTheLight("t3_2")->color.rgb().g() - 0.05f,
-			 0};
 	  }
 	}
 	if (event.key() == Key::P) {
@@ -205,20 +243,14 @@ class lab4 : public Platform::Application {
 			{lights.lookForTheLight("t3_1")->color.rgb().r() + 0.05f,
 			 0,
 			 lights.lookForTheLight("t3_1")->color.rgb().b() + 0.05f};
-		lights.lookForTheLight("t3_2")->color =
-			{lights.lookForTheLight("t3_2")->color.rgb().r() + 0.05f,
-			 lights.lookForTheLight("t3_2")->color.rgb().g() + 0.05f,
-			 0};
 	  }
 	}
 	if (selectedTask == 2) {
 	  if (lights.lookForTheLight("t3_1")->color.rgb().r() >= 1) {
 		lights.lookForTheLight("t3_1")->color = {0.1, 0, 0.1};
-		lights.lookForTheLight("t3_2")->color = {0.1, 0.1, 0};
 	  }
 	  if (lights.lookForTheLight("t3_1")->color.rgb().r() <= 0) {
 		lights.lookForTheLight("t3_1")->color = {0, 0, 0};
-		lights.lookForTheLight("t3_2")->color = {0, 0, 0};
 	  }
 	}
   }
