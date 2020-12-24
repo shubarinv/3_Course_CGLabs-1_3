@@ -17,6 +17,7 @@ using namespace Magnum;
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Primitives/UVSphere.h>
 
 #include "../functions.hpp"
 #include "../lights.hpp"
@@ -32,16 +33,16 @@ class lab4 : public Platform::Application {
 	GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 	GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 	lightCoords = getCoordsForLight(0, 0, 4, 400);
-	Trade::MeshData cube = Primitives::cubeSolid();
+	Trade::MeshData sphere = Primitives::uvSphereSolid(20, 20);
 
 	GL::Buffer vertices;
-	vertices.setData(MeshTools::interleave(cube.positions3DAsArray(), cube.normalsAsArray()));
-	std::pair<Containers::Array<char>, MeshIndexType> compressed = MeshTools::compressIndices(cube.indicesAsArray());
+	vertices.setData(MeshTools::interleave(sphere.positions3DAsArray(), sphere.normalsAsArray()));
+	std::pair<Containers::Array<char>, MeshIndexType> compressed = MeshTools::compressIndices(sphere.indicesAsArray());
 	GL::Buffer indices;
 	indices.setData(compressed.first);
 
-	mesh.setPrimitive(cube.primitive())
-		.setCount(cube.indexCount())
+	mesh.setPrimitive(sphere.primitive())
+		.setCount(sphere.indexCount())
 		.addVertexBuffer(std::move(vertices), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
 		.setIndexBuffer(std::move(indices), 0, compressed.second);
 
@@ -53,9 +54,8 @@ class lab4 : public Platform::Application {
 		* Matrix4::translation(Vector3::zAxis(-10.0f));
 	color = Color3::fromHsv({Math::Deg(35.0f), 1.0f, 1.0f});
 
-	lights.addLight({lightCoords[0], {0, 0, 1}, "t1_1"});
-	lights.addLight({lightCoords[100], {1, 0, 0}, "t1_2"});
-	shader= Shaders::Phong({},lights.countEnabledLights());
+	lights.addLight({{0, 0, 200}, {0.8, 0.8, 0.8}, "t1_1"});
+	shader = Shaders::Phong({}, lights.countEnabledLights());
   }
 
   /// Variables and functions
@@ -63,12 +63,8 @@ class lab4 : public Platform::Application {
   void drawEvent() override {
 	GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
 
-	lights.lookForTheLight("t1_1")->position = lightCoords[currentLightPosition];
-	if(selectedTask==1){
-	  lights.lookForTheLight("t1_2")->disable();
-	}
-	if(shader.lightCount()!=lights.countEnabledLights()){
-	  shader= Shaders::Phong({},lights.countEnabledLights());
+	if (shader.lightCount() != lights.countEnabledLights()) {
+	  shader = Shaders::Phong({}, lights.countEnabledLights());
 	}
 	shader.setLightPositions(lights.getPositions())
 		.setLightColors(lights.getColors())
@@ -127,6 +123,16 @@ class lab4 : public Platform::Application {
 		selectedTask = 0;
 	  }
 	  LOG_S(INFO) << "Selected task: " << selectedTask;
+	}
+	if (event.key() == Key::A) {
+	  if (selectedTask == 0) {
+		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() - 0.05f};
+	  }
+	}
+	if (event.key() == Key::D) {
+	  if (selectedTask == 0) {
+		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() + 0.05f};
+	  }
 	}
   }
   void quit() {

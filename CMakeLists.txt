@@ -21,7 +21,7 @@ set(WITH_SDL2APPLICATION OFF CACHE BOOL "" FORCE)
 add_subdirectory(Libs/magnum EXCLUDE_FROM_ALL)
 find_package(Magnum REQUIRED GL Shaders GlfwApplication Primitives Trade)
 
-add_executable(${PROJECT_NAME} Labs/lab4.cpp vertex.hpp mesh.hpp lights.hpp) # change lab here
+add_executable(${PROJECT_NAME} Labs/lab4.cpp vertex.hpp mesh.hpp lights.hpp camera.hpp) # change lab here
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Magnum::Application
