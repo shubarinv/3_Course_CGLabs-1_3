@@ -8,7 +8,8 @@
 
 
 #include "Libs/loguru.cpp"
-
+typedef Vector3 Vec3;
+typedef Color4 _Color4;
 void logInit([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   loguru::init(argc, argv);
 
