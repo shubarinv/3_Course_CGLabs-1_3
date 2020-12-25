@@ -28,7 +28,7 @@ class lab4 : public Platform::Application {
 
  public:
   explicit lab4(const Arguments& arguments) : Platform::Application{arguments, Configuration{}.setTitle("Lab 4")} {
-
+	GLConfiguration().setSampleCount(4);
 	logInit(arguments.argc, arguments.argv);
 	setWindowSize({640, 640});
 	glfwWindowHint(GLFW_SAMPLES, 4);
@@ -98,7 +98,9 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_1")->disable();
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->disable();
-	  shader.draw(mesh_sphere);
+
+		shader.draw(mesh_sphere);
+
 	}
 	if (selectedTask == 1) {
 	  lights.lookForTheLight("t1_1")->enable();
@@ -106,22 +108,28 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_1")->disable();
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->disable();
-	  shader.draw(mesh_sphere);
+
+		shader.draw(mesh_sphere);
+
 	}
 	if (selectedTask == 2) {
 	  lights.lookForTheLight("t1_1")->disable();
 	  lights.lookForTheLight("t3_1")->enable();
 	  lights.lookForTheLight("t3_2")->enable();
 	  lights.lookForTheLight("t4_1")->disable();
-	  shader.draw(mesh_pyramid);
+
+		shader.draw(mesh_pyramid);
+
 	}
 	if (selectedTask == 3) {
 	  lights.lookForTheLight("t1_1")->disable();
 	  lights.lookForTheLight("t3_1")->disable();
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->enable();
-	  shader.draw(mesh_cube);
-	  lights.lookForTheLight("t4_1")->position=lightCoords[currentLightPosition];
+
+		shader.draw(mesh_cube);
+
+	  lights.lookForTheLight("t4_1")->position = lightCoords[currentLightPosition];
 	}
 
 	if (shader.lightCount() != lights.countEnabledLights()) {
@@ -135,18 +143,17 @@ class lab4 : public Platform::Application {
 		.setTransformationMatrix(transformation)
 		.setNormalMatrix(transformation.normalMatrix())
 		.setProjectionMatrix(projection);
-	currentLightPosition=currentLightPosition+lightMovementSpeed;
-//	LOG_S(INFO) << "A: Current lightPosition: "<<currentLightPosition;
+	currentLightPosition = currentLightPosition + lightMovementSpeed;
+	//	LOG_S(INFO) << "A: Current lightPosition: "<<currentLightPosition;
 	if (currentLightPosition >= (int)lightCoords.size()) {
-//	  LOG_S(INFO) << "Zeroing currentLightPosition: "<<currentLightPosition<<" | "<<lightCoords.size();
+	  //	  LOG_S(INFO) << "Zeroing currentLightPosition: "<<currentLightPosition<<" | "<<lightCoords.size();
 	  currentLightPosition = 0;
-
 	}
 	if (currentLightPosition < 0) {
-//	  LOG_S(INFO) << "Moving currentLightPosition to array end: "<<currentLightPosition;
-	  currentLightPosition = lightCoords.size()-currentLightPosition-Math::abs(lightMovementSpeed);
+	  //	  LOG_S(INFO) << "Moving currentLightPosition to array end: "<<currentLightPosition;
+	  currentLightPosition = lightCoords.size() - currentLightPosition - Math::abs(lightMovementSpeed);
 	}
-//	LOG_S(INFO) << "B: Current lightPosition: "<<currentLightPosition;
+	//	LOG_S(INFO) << "B: Current lightPosition: "<<currentLightPosition;
 	swapBuffers();
 	redraw();
   }
@@ -158,7 +165,8 @@ class lab4 : public Platform::Application {
   Matrix4 transformation, projection;
   Color3 color;
   Lights lights;
-  int lightMovementSpeed ={1};
+  bool shouldBindTexture = false;
+  int lightMovementSpeed = {1};
   unsigned int selectedTask{0};
   std::vector<Vector3> lightCoords;
   int currentLightPosition{0};
@@ -214,7 +222,7 @@ class lab4 : public Platform::Application {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x() - 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
-	  if(selectedTask == 3) {
+	  if (selectedTask == 3) {
 		lightMovementSpeed--;
 	  }
 	}
@@ -225,9 +233,27 @@ class lab4 : public Platform::Application {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x() + 0.5f, lights.lookForTheLight("t1_1")->position.y(), 10};
 	  }
-	  if(selectedTask == 3) {
+	  if (selectedTask == 3) {
 		lightMovementSpeed++;
 	  }
+	}
+	if (event.key() == Key::NumSeven) {
+	  GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Fill);
+	}
+	if (event.key() == Key::NumEight) {
+	  GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
+	  GL::Renderer::setLineWidth(2);
+	}
+	if (event.key() == Key::NumNine) {
+	  GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Point);
+	  GL::Renderer::setPointSize(4);
+	}
+
+	if (event.key() == Key::NumOne) {
+	  shouldBindTexture = false;
+	}
+	if (event.key() == Key::NumThree) {
+	  shouldBindTexture = true;
 	}
 	if (event.key() == Key::Y) {
 	  if (selectedTask == 2) {
