@@ -20,9 +20,9 @@ using namespace Magnum;
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/UVSphere.h>
 
+#include "../camera.hpp"
 #include "../functions.hpp"
 #include "../lights.hpp"
-#include "../camera.hpp"
 
 class lab4 : public Platform::Application {
   typedef Magnum::Platform::GlfwApplication::KeyEvent::Key Key;
@@ -74,11 +74,15 @@ class lab4 : public Platform::Application {
 		.setCount(cube.indexCount())
 		.addVertexBuffer(std::move(vertices_cube), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
 		.setIndexBuffer(std::move(indices_cube), 0, compressed_cube.second);
-
-	camera=new Camera(windowSize());
-	camera->transform(Math::Deg(30.0f),Math::Deg(40.0f),Math::Deg(0.f));
+/*
+	camera = new Camera(windowSize());*/
+	_transformation =
+		Matrix4::rotationX(Deg(30.0))*Matrix4::rotationY(Deg(40.0));
+	_projection =
+		Matrix4::perspectiveProjection(
+			Deg(35.0), Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f)*
+			Matrix4::translation(Vector3::zAxis(-10.0f));
 	color = Color3::fromHsv({Math::Deg(35.0f), 1.0f, 1.0f});
-
 	lights.addLight({{0, 0, 10}, {0.8, 0.8, 0.8}, "t1_1"});
 	lights.addLight({{10, 0, 0}, {0.8, 0, 0.8}, "t3_1"});
 	lights.addLight({{-10, 0, 10}, {0.8, 0.8, 0}, "t3_2"});
@@ -134,16 +138,16 @@ class lab4 : public Platform::Application {
 		.setLightColors(lights.getColors())
 		.setDiffuseColor({1, 1, 1})
 		.setAmbientColor({0.1, 0.1, 0.1})
-		.setTransformationMatrix(camera->getTransformation())
-		.setNormalMatrix(camera->getTransformation().normalMatrix())
-		.setProjectionMatrix(camera->getProjection());
+		.setTransformationMatrix(_transformation)
+		.setNormalMatrix(_transformation.normalMatrix())
+		.setProjectionMatrix(_projection);
 	currentLightPosition = currentLightPosition + lightMovementSpeed;
 
 	if (currentLightPosition >= (int)lightCoords.size()) {
 	  currentLightPosition = 0;
 	}
 	if (currentLightPosition < 0) {
-	  currentLightPosition = lightCoords.size() - currentLightPosition - Math::abs(lightMovementSpeed);
+	  currentLightPosition = (int)lightCoords.size() - currentLightPosition - Math::abs(lightMovementSpeed);
 	}
 
 	swapBuffers();
@@ -154,9 +158,11 @@ class lab4 : public Platform::Application {
   GL::Mesh mesh_pyramid;
   GL::Mesh mesh_cube;
   Shaders::Phong shader;
-  Camera *camera;
+  Camera* camera;
   Color3 color;
   Lights lights;
+  Matrix4 _transformation;
+  Matrix4 _projection;
   bool shouldBindTexture = false;
   int lightMovementSpeed = {1};
   unsigned int selectedTask{0};
@@ -275,6 +281,16 @@ class lab4 : public Platform::Application {
   void quit() {
 	LOG_S(INFO) << "Goodbye!";
 	this->exit();
+  }
+  void mouseMoveEvent(MouseMoveEvent& event) override {
+	if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+	Vector2 delta = 3.0f * Vector2{event.relativePosition()} / Vector2{windowSize()};
+	_transformation =
+		Matrix4::rotationX(Rad{delta.y()})*
+			_transformation*
+			Matrix4::rotationY(Rad{delta.x()});
+	event.setAccepted();
+	redraw();
   }
 };
 
