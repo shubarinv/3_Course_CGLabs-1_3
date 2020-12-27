@@ -9,10 +9,11 @@
 
 #include "Libs/loguru.cpp"
 typedef Vector3 Vec3;
-typedef Color4 _Color4;
+typedef Vector2 Vec2;
+typedef Color4 Color4_;
+typedef Matrix4 Mat4;
 void logInit([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   loguru::init(argc, argv);
-
   // Put every log message in "everything.log":
   loguru::add_file("main.log", loguru::Truncate, loguru::Verbosity_MAX);
 }

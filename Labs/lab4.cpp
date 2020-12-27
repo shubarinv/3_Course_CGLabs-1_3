@@ -22,6 +22,7 @@ using namespace Magnum;
 
 #include "../functions.hpp"
 #include "../lights.hpp"
+#include "../camera.hpp"
 
 class lab4 : public Platform::Application {
   typedef Magnum::Platform::GlfwApplication::KeyEvent::Key Key;
@@ -74,12 +75,8 @@ class lab4 : public Platform::Application {
 		.addVertexBuffer(std::move(vertices_cube), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
 		.setIndexBuffer(std::move(indices_cube), 0, compressed_cube.second);
 
-	transformation =
-		Matrix4::rotationX(Math::Deg(30.0f)) * Matrix4::rotationY(Math::Deg(40.0f));
-	projection =
-		Matrix4::perspectiveProjection(
-			Math::Deg(35.0f), Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f)
-		* Matrix4::translation(Vector3::zAxis(-10.0f));
+	camera=new Camera(windowSize());
+	camera->transform(Math::Deg(30.0f),Math::Deg(40.0f),Math::Deg(0.f));
 	color = Color3::fromHsv({Math::Deg(35.0f), 1.0f, 1.0f});
 
 	lights.addLight({{0, 0, 10}, {0.8, 0.8, 0.8}, "t1_1"});
@@ -99,8 +96,7 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->disable();
 
-		shader.draw(mesh_sphere);
-
+	  shader.draw(mesh_sphere);
 	}
 	if (selectedTask == 1) {
 	  lights.lookForTheLight("t1_1")->enable();
@@ -109,8 +105,7 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->disable();
 
-		shader.draw(mesh_sphere);
-
+	  shader.draw(mesh_sphere);
 	}
 	if (selectedTask == 2) {
 	  lights.lookForTheLight("t1_1")->disable();
@@ -118,8 +113,7 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_2")->enable();
 	  lights.lookForTheLight("t4_1")->disable();
 
-		shader.draw(mesh_pyramid);
-
+	  shader.draw(mesh_pyramid);
 	}
 	if (selectedTask == 3) {
 	  lights.lookForTheLight("t1_1")->disable();
@@ -127,7 +121,7 @@ class lab4 : public Platform::Application {
 	  lights.lookForTheLight("t3_2")->disable();
 	  lights.lookForTheLight("t4_1")->enable();
 
-		shader.draw(mesh_cube);
+	  shader.draw(mesh_cube);
 
 	  lights.lookForTheLight("t4_1")->position = lightCoords[currentLightPosition];
 	}
@@ -140,20 +134,18 @@ class lab4 : public Platform::Application {
 		.setLightColors(lights.getColors())
 		.setDiffuseColor({1, 1, 1})
 		.setAmbientColor({0.1, 0.1, 0.1})
-		.setTransformationMatrix(transformation)
-		.setNormalMatrix(transformation.normalMatrix())
-		.setProjectionMatrix(projection);
+		.setTransformationMatrix(camera->getTransformation())
+		.setNormalMatrix(camera->getTransformation().normalMatrix())
+		.setProjectionMatrix(camera->getProjection());
 	currentLightPosition = currentLightPosition + lightMovementSpeed;
-	//	LOG_S(INFO) << "A: Current lightPosition: "<<currentLightPosition;
+
 	if (currentLightPosition >= (int)lightCoords.size()) {
-	  //	  LOG_S(INFO) << "Zeroing currentLightPosition: "<<currentLightPosition<<" | "<<lightCoords.size();
 	  currentLightPosition = 0;
 	}
 	if (currentLightPosition < 0) {
-	  //	  LOG_S(INFO) << "Moving currentLightPosition to array end: "<<currentLightPosition;
 	  currentLightPosition = lightCoords.size() - currentLightPosition - Math::abs(lightMovementSpeed);
 	}
-	//	LOG_S(INFO) << "B: Current lightPosition: "<<currentLightPosition;
+
 	swapBuffers();
 	redraw();
   }
@@ -162,7 +154,7 @@ class lab4 : public Platform::Application {
   GL::Mesh mesh_pyramid;
   GL::Mesh mesh_cube;
   Shaders::Phong shader;
-  Matrix4 transformation, projection;
+  Camera *camera;
   Color3 color;
   Lights lights;
   bool shouldBindTexture = false;

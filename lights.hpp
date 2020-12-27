@@ -9,13 +9,13 @@
 #include "functions.hpp"
 class Lights {
   struct Light {
-	Light(Vec3 _position, _Color4 _color, std::string _name) {
+	Light(Vec3 _position, Color4_ _color, std::string _name) {
 	  position = _position;
 	  color = _color;
 	  name = std::move(_name);
 	}
 	Vec3 position;
-	_Color4 color;
+	Color4_ color;
 	std::string name;
 	bool enabled = true;
 	void enable() {
@@ -39,8 +39,8 @@ class Lights {
 	}
 	return lightsPos;
   }
-  std::vector<_Color4> getColors() {
-	std::vector<_Color4> lightsColors;
+  std::vector<Color4_> getColors() {
+	std::vector<Color4_> lightsColors;
 	for (auto& light : lights) {
 	  if (light.enabled)
 		lightsColors.push_back(light.color);

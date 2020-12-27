@@ -4,8 +4,11 @@
 
 #ifndef CGLABS__CAMERA_HPP_
 #define CGLABS__CAMERA_HPP_
+#include <Magnum/SceneGraph/Camera.h>
 
-class Camera {
+#include "functions.hpp"
+
+class Camera:Magnum::SceneGraph::Camera3D{
 
 };
 
