@@ -74,14 +74,14 @@ class lab4 : public Platform::Application {
 		.setCount(cube.indexCount())
 		.addVertexBuffer(std::move(vertices_cube), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
 		.setIndexBuffer(std::move(indices_cube), 0, compressed_cube.second);
-/*
+	/*
 	camera = new Camera(windowSize());*/
 	_transformation =
-		Matrix4::rotationX(Deg(30.0))*Matrix4::rotationY(Deg(40.0));
+		Matrix4::rotationX(Deg(0)) * Matrix4::rotationY(Deg(0));
 	_projection =
 		Matrix4::perspectiveProjection(
-			Deg(35.0), Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f)*
-			Matrix4::translation(Vector3::zAxis(-10.0f));
+			Deg(35.0), Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f)
+		* Matrix4::translation(Vector3::zAxis(-10.0f));
 	color = Color3::fromHsv({Math::Deg(35.0f), 1.0f, 1.0f});
 	lights.addLight({{0, 0, 10}, {0.8, 0.8, 0.8}, "t1_1"});
 	lights.addLight({{10, 0, 0}, {0.8, 0, 0.8}, "t3_1"});
@@ -157,6 +157,7 @@ class lab4 : public Platform::Application {
   GL::Mesh mesh_sphere;
   GL::Mesh mesh_pyramid;
   GL::Mesh mesh_cube;
+  GL::Mesh test;
   Shaders::Phong shader;
   Camera* camera;
   Color3 color;
@@ -203,17 +204,17 @@ class lab4 : public Platform::Application {
 	  }
 	  LOG_S(INFO) << "Selected task: " << selectedTask;
 	}
-	if (event.key() == Key::W) {
+	if (event.key() == Key::U) {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x(), lights.lookForTheLight("t1_1")->position.y(), lights.lookForTheLight("t1_1")->position.z() - 0.5f};
 	  }
 	}
-	if (event.key() == Key::S) {
+	if (event.key() == Key::J) {
 	  if (selectedTask == 1) {
 		lights.lookForTheLight("t1_1")->position = {lights.lookForTheLight("t1_1")->position.x(), lights.lookForTheLight("t1_1")->position.y(), lights.lookForTheLight("t1_1")->position.z() + 0.5f};
 	  }
 	}
-	if (event.key() == Key::A) {
+	if (event.key() == Key::H) {
 	  if (selectedTask == 0) {
 		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() - 0.05f};
 	  }
@@ -224,7 +225,7 @@ class lab4 : public Platform::Application {
 		lightMovementSpeed--;
 	  }
 	}
-	if (event.key() == Key::D) {
+	if (event.key() == Key::K) {
 	  if (selectedTask == 0) {
 		lights.lookForTheLight("t1_1")->color = {lights.lookForTheLight("t1_1")->color.rgb().r(), 0, lights.lookForTheLight("t1_1")->color.rgb().b() + 0.05f};
 	  }
@@ -234,6 +235,18 @@ class lab4 : public Platform::Application {
 	  if (selectedTask == 3) {
 		lightMovementSpeed++;
 	  }
+	}
+	if(event.key() == Key::W){
+	  _transformation=_transformation*Matrix4::translation({0,0,0.08});
+	}
+	if(event.key() == Key::A){
+	  _transformation=_transformation*Matrix4::translation({0.08,0,0});
+	}
+	if(event.key() == Key::S){
+	  _transformation=_transformation*Matrix4::translation({0,0,-0.08});
+	}
+	if(event.key() == Key::D){
+	  _transformation=_transformation*Matrix4::translation({-0.08,0,0});
 	}
 	if (event.key() == Key::NumSeven) {
 	  GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Fill);
@@ -283,14 +296,33 @@ class lab4 : public Platform::Application {
 	this->exit();
   }
   void mouseMoveEvent(MouseMoveEvent& event) override {
-	if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+	if (!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 	Vector2 delta = 3.0f * Vector2{event.relativePosition()} / Vector2{windowSize()};
 	_transformation =
-		Matrix4::rotationX(Rad{delta.y()})*
-			_transformation*
-			Matrix4::rotationY(Rad{delta.x()});
+		Matrix4::rotationX(Rad{delta.y()}) * _transformation * Matrix4::rotationY(Rad{delta.x()});
 	event.setAccepted();
 	redraw();
+  }
+
+  std::vector<float> generateTextureCoords(unsigned long size) {
+	float texCoordsPreset[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f};
+	std::vector<float> textureCoords;
+	short presetNum{0};
+	for (int i = 0; i < size; i++) {
+	  if (presetNum > 11)presetNum = 0;
+	  textureCoords.push_back(texCoordsPreset[presetNum]);
+	  textureCoords.push_back(texCoordsPreset[presetNum + 1]);
+	  presetNum += 2;
+	}
+
+	return textureCoords;
   }
 };
 
