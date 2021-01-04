@@ -44,9 +44,9 @@ class lab4 : public Platform::Application {
 	Trade::MeshData sphere = Primitives::uvSphereSolid(20, 20);
 	Trade::MeshData pyramid = Primitives::coneSolid(20, 20, 1.f);
 	Trade::MeshData cube = Primitives::cubeSolid();
-	mesh_sphere=MeshTools::compile(sphere);
-	mesh_cube=MeshTools::compile(cube);
-	mesh_pyramid=MeshTools::compile(pyramid);
+	mesh_sphere = MeshTools::compile(sphere);
+	mesh_cube = MeshTools::compile(cube);
+	mesh_pyramid = MeshTools::compile(pyramid);
 	/*
 	camera = new Camera(windowSize());*/
 	_transformation =
@@ -113,9 +113,7 @@ class lab4 : public Platform::Application {
 		.setAmbientColor({0.1, 0.1, 0.1})
 		.setTransformationMatrix(_transformation)
 		.setNormalMatrix(_transformation.normalMatrix())
-		.setProjectionMatrix(_projection).
-		bindDiffuseTexture()
-;
+		.setProjectionMatrix(_projection);
 	currentLightPosition = currentLightPosition + lightMovementSpeed;
 
 	if (currentLightPosition >= (int)lightCoords.size()) {
@@ -212,17 +210,17 @@ class lab4 : public Platform::Application {
 		lightMovementSpeed++;
 	  }
 	}
-	if(event.key() == Key::W){
-	  _transformation=_transformation*Matrix4::translation({0,0,0.08});
+	if (event.key() == Key::W) {
+	  _transformation = _transformation * Matrix4::translation({0, 0, 0.08});
 	}
-	if(event.key() == Key::A){
-	  _transformation=_transformation*Matrix4::translation({0.08,0,0});
+	if (event.key() == Key::A) {
+	  _transformation = _transformation * Matrix4::translation({0.08, 0, 0});
 	}
-	if(event.key() == Key::S){
-	  _transformation=_transformation*Matrix4::translation({0,0,-0.08});
+	if (event.key() == Key::S) {
+	  _transformation = _transformation * Matrix4::translation({0, 0, -0.08});
 	}
-	if(event.key() == Key::D){
-	  _transformation=_transformation*Matrix4::translation({-0.08,0,0});
+	if (event.key() == Key::D) {
+	  _transformation = _transformation * Matrix4::translation({-0.08, 0, 0});
 	}
 	if (event.key() == Key::NumSeven) {
 	  GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Fill);
@@ -292,7 +290,7 @@ class lab4 : public Platform::Application {
 	std::vector<float> textureCoords;
 	short presetNum{0};
 	for (int i = 0; i < size; i++) {
-	  if (presetNum > 11)presetNum = 0;
+	  if (presetNum > 11) presetNum = 0;
 	  textureCoords.push_back(texCoordsPreset[presetNum]);
 	  textureCoords.push_back(texCoordsPreset[presetNum + 1]);
 	  presetNum += 2;

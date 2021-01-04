@@ -5,6 +5,7 @@ project(cgLabs)
 set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Libs/magnum/modules ${CMAKE_CURRENT_SOURCE_DIR}/Libs/corrade/modules ${CMAKE_MODULE_PATH})
 add_subdirectory(Libs/glfw)
 
 include_directories(Libs/glfw/include)
@@ -18,6 +19,7 @@ add_subdirectory(Libs/corrade EXCLUDE_FROM_ALL)
 # Add Magnum as a subproject, enable GLFWApplication
 set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
 set(WITH_SDL2APPLICATION OFF CACHE BOOL "" FORCE)
+find_package(Corrade REQUIRED)
 add_subdirectory(Libs/magnum EXCLUDE_FROM_ALL)
 find_package(Magnum REQUIRED GL Shaders GlfwApplication Primitives Trade)
 
