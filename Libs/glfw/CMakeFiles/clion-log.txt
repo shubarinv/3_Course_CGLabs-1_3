@@ -1,4 +1,0 @@
-Cannot generate into C:\glfw-3.3.2
-It was created with incompatible generator 'NMake Makefiles'
-
-Please either delete it manually or select another generation directory

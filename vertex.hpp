@@ -1,64 +1,47 @@
 //
-// Created by Vladimir Shubarin on 10/13/20.
+// Created by Vladimir Shubarin on 03.12.2020.
 //
 
 #ifndef CGLABS__VERTEX_HPP_
 #define CGLABS__VERTEX_HPP_
+#include "functions.hpp"
 class Vertex {
-  glm::vec3 position{};///< @brief coords of Vertex
-
+  glm::vec3 position{};
+  glm::vec3 color{};
+  glm::vec3 normal{};
  public:
-  /**
-   * @returns returns position of the Vertex
-   */
-  [[maybe_unused]] [[nodiscard]] const glm::vec3 &getPosition() const {
-	return position;
+  Vertex() {
+	PLOGV << "Created Vertex(" << this << ") with unset params";
   }
-  /**
-   * @returns returns color of the vertex
-   */
-  [[maybe_unused]] [[nodiscard]] const glm::vec3 &getColor() const {
-	return color;
+
+  [[maybe_unused]] explicit Vertex(glm::vec3 _position) {
+	PLOGV << "Created Vertex(" << this << ") with position x:" << _position.x << " y:" << _position.y << " z:" << _position.z;
+
+	position = _position;
   }
-  /**
-   * @param _pos vec3 position of vertex
-   * @param _color vec3 color of vertex
-   */
-  explicit Vertex(glm::vec3 _pos = {0, 0, 0}, glm::vec3 _color = {0, 0, 0}) {
-	setPosition(_pos);
+  [[maybe_unused]] Vertex(glm::vec3 _position, glm::vec3 _color) {
+	PLOGV << "Created Vertex(" << this << ") with position x:" << _position.x << " y:" << _position.y << " z:" << _position.z <<
+		  " and color r:" << _color.r << " g:" << _color.g << " b:" << _color.b;
+	position = _position;
 	setColor(_color);
   }
 
-  glm::vec3 normal{};
- private:
-  glm::vec3 color{};
-  /**
-   * @brief sets position for the vertex
-   * @param _newPosition new position for the vertex
-   */
-  void setPosition(glm::vec3 _newPosition) {
-	position = _newPosition;
+  [[maybe_unused]] void setPosition(const glm::vec3 &_position) {
+	Vertex::position = _position;
   }
-  /**
-   * @brief sets color for vertex
-   * @param _color vec3 color for vertex
-   */
-  void setColor(glm::vec3 _color) {
-	if (_color.x < -1 || _color.x > 1 || _color.y < -1 || _color.y > 1 || _color.z < -1 || _color.z > 1) {
-	  LOG_S(ERROR) << "Invalid color!";
+  [[maybe_unused]] void setColor(glm::vec3 _color) {
+	if (_color.r > 1 || _color.g > 1 || _color.b > 1 || _color.r < 0 || _color.g < 0 || _color.b < 0) {
+	  PLOGE << "Vertex(" << this << " Attempted to set color that exceeds allowed range. (this call will be ignored)";
+	} else {
+	  Vertex::color = _color;
 	}
-	color = _color;
   }
-
-  /**
-   * @brief Compares two vertices
-   */
-  bool operator==(const Vertex &b) const {
-	if (position.x == b.position.x && position.y == b.position.y && position.z == b.position.z) {
-	  return true;
-	} else
-	  return false;
+  [[maybe_unused]] void setNormal(const glm::vec3 &_normal) {
+	Vertex::normal = _normal;
+  }
+  ~Vertex() {
+	PLOGV << "Destroyed Vertex(" << this << ")";
   }
 };
 
-#endif//CGLABS__VERTEX_HPP_
+#endif //CGLABS__VERTEX_HPP_

@@ -4,23 +4,23 @@
 
 #include "functions.hpp"
 #include "application.hpp"
-#include "shader.hpp"
+#include "vertex.hpp"
 
 void programQuit(int key, int action, Application *app) {
   app->close();
-  LOG_S(INFO) << "Quiting...";
+  PLOGV << "Quiting...";
 }
 
 int main(int argc, char *argv[]) {
   Application app;
   app.init();
   Application::setOpenGLFlags();
-
+  app.registerKeyCallback(GLFW_KEY_ESCAPE, programQuit);
+  glfwSetWindowUserPointer(app.getWindow()->getGLFWWindow(), &app);
 
   while (!app.shouldClose) {
 	glClear(GL_COLOR_BUFFER_BIT);
-	// 1rst attribute buffer : vertices
-	glCall(glfwSwapBuffers(app.getWindow()->getGLFWWindow()));
+	glfwSwapBuffers(app.getWindow()->getGLFWWindow());
 	glfwPollEvents();
   }
   glfwTerminate();

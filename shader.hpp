@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
-
 #include "functions.hpp"
 
 class Shader {
@@ -18,8 +17,8 @@ class Shader {
    * @brief contains code for vertex and fragment shader
    */
   struct ShaderProgramSource {
-	std::string vertexShader{};  ///< @brief program for vertex shader
-	std::string fragmentShader{};///< @brief program for fragment shader
+	std::string vertexShader{}; ///< @brief program for vertex shader
+	std::string fragmentShader{}; ///< @brief program for fragment shader
   };
 
  public:
@@ -28,15 +27,14 @@ class Shader {
    * @param _filepath path to file containing shader source code
    */
   explicit Shader(const std::string &_filepath) {
-	LOG_SCOPE_F(INFO, "Shader init");
 	filepath = _filepath;
 	source = parseShader();
 	rendererID = createShader();
-	LOG_S(INFO) << "Created shader with id: " << rendererID;
+	PLOGV << "Created shader with id: " << rendererID;
   }
   ~Shader() {
 	glCall(glDeleteProgram(rendererID));
-	LOG_S(INFO) << "destroyed shader with id: " << rendererID;
+	PLOGV << "destroyed shader with id: " << rendererID;
   }
   /**
    * @brief Activates shader.
@@ -63,9 +61,6 @@ class Shader {
   void setUniform4f(const std::string &name, glm::vec4 vec4) {
 	glCall(glUniform4f(getUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w));
   }
-  void setUniform3f(const std::string &name, glm::vec3 vec3) {
-	glCall(glUniform3f(getUniformLocation(name), vec3.x, vec3.y, vec3.z));
-  }
   /**
   * @brief Sets uniform with mat4
   * @param name name of the uniform
@@ -77,7 +72,7 @@ class Shader {
 
  private:
   ShaderProgramSource source;
-  std::unordered_map<std::string, int> uniformLocationCache;///< cache of uniforms locations
+  std::unordered_map<std::string, int> uniformLocationCache; ///< cache of uniforms locations
 
   /**
    * @brief gets location of uniform in shader
@@ -90,7 +85,7 @@ class Shader {
 	}
 	glCall(int location = glGetUniformLocation(rendererID, name.c_str()));
 	if (location == -1) {
-	  LOG_S(WARNING) << "Uniform with name: " << name << " does not exist";
+	  PLOGW << "Uniform with name: " << name << " does not exist";
 	}
 
 	uniformLocationCache[name] = location;
@@ -104,10 +99,10 @@ class Shader {
    * @returns source code for vertex and fragment shader.
    */
   ShaderProgramSource parseShader() {
-	LOG_S(INFO) << "Parsing shader at: " << filepath.c_str();
+	PLOGV << "Parsing shader at: " << filepath.c_str();
 	std::ifstream stream(filepath);
-	if (stream.fail()) {
-	  LOG_S(FATAL) << "Unable to open shader file at: " << filepath.c_str();
+	if(stream.fail()){
+	  PLOGF<<"Unable to open shader file at: " << filepath.c_str();
 	  throw std::runtime_error("Unable to open shader file");
 	}
 	std::string line;
@@ -129,7 +124,7 @@ class Shader {
 		ss[(int)type] << line << "\n";
 	  }
 	}
-	LOG_S(INFO) << "Shader parsed successfully";
+	PLOGV << "Shader parsed successfully";
 	return {ss[0].str(), ss[1].str()};
   }
 
@@ -140,7 +135,7 @@ class Shader {
    * @return returns reference to compiled shader program
    */
   static unsigned int compileShader(int type, std::string &source) {
-	LOG_S(INFO) << "Trying to compile " << (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader ");
+	PLOGV << "Trying to compile "<< (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader ");
 	unsigned int id = glCreateShader(type);
 	const char *src = source.c_str();
 	glShaderSource(id, 1, &src, nullptr);
@@ -157,15 +152,15 @@ class Shader {
 	  error += (type == GL_VERTEX_SHADER ? "VertexShader " : "FragmentShader ");
 	  error += buf;
 	  glGetShaderInfoLog(id, length, &length, buf);
-	  LOG_S(FATAL) << error;
+	  PLOGF<<error;
 	  throw std::runtime_error(error);
 	  glDeleteShader(id);
 	}
-	LOG_S(INFO) << "shader compiled successfully";
+	PLOGV<<"shader compiled successfully";
 	return id;
   }
 
-  /**
+/**
  * @brief Creates shader that can be used
  * @return reference to final shader program
  */
