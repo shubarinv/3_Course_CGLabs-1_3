@@ -26,6 +26,7 @@ using namespace Magnum;
 #include "../camera.hpp"
 #include "../functions.hpp"
 #include "../lights.hpp"
+#include "../texture.hpp"
 
 class lab4 : public Platform::Application {
   typedef Magnum::Platform::GlfwApplication::KeyEvent::Key Key;
