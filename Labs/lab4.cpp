@@ -14,9 +14,12 @@
 
 using namespace Magnum;
 
+#include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Texture.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/UVSphere.h>
 
@@ -41,39 +44,9 @@ class lab4 : public Platform::Application {
 	Trade::MeshData sphere = Primitives::uvSphereSolid(20, 20);
 	Trade::MeshData pyramid = Primitives::coneSolid(20, 20, 1.f);
 	Trade::MeshData cube = Primitives::cubeSolid();
-
-	GL::Buffer vertices_sphere;
-	vertices_sphere.setData(MeshTools::interleave(sphere.positions3DAsArray(), sphere.normalsAsArray()));
-	std::pair<Containers::Array<char>, MeshIndexType> compressed_sphere = MeshTools::compressIndices(sphere.indicesAsArray());
-	GL::Buffer indices_sphere;
-	indices_sphere.setData(compressed_sphere.first);
-
-	GL::Buffer vertices_pyramid;
-	vertices_pyramid.setData(MeshTools::interleave(pyramid.positions3DAsArray(), pyramid.normalsAsArray()));
-	std::pair<Containers::Array<char>, MeshIndexType> compressed_pyramid = MeshTools::compressIndices(pyramid.indicesAsArray());
-	GL::Buffer indices_pyramid;
-	indices_pyramid.setData(compressed_pyramid.first);
-
-	GL::Buffer vertices_cube;
-	vertices_cube.setData(MeshTools::interleave(cube.positions3DAsArray(), cube.normalsAsArray()));
-	std::pair<Containers::Array<char>, MeshIndexType> compressed_cube = MeshTools::compressIndices(cube.indicesAsArray());
-	GL::Buffer indices_cube;
-	indices_cube.setData(compressed_cube.first);
-
-	mesh_sphere.setPrimitive(sphere.primitive())
-		.setCount(sphere.indexCount())
-		.addVertexBuffer(std::move(vertices_sphere), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-		.setIndexBuffer(std::move(indices_sphere), 0, compressed_sphere.second);
-
-	mesh_pyramid.setPrimitive(pyramid.primitive())
-		.setCount(pyramid.indexCount())
-		.addVertexBuffer(std::move(vertices_pyramid), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-		.setIndexBuffer(std::move(indices_pyramid), 0, compressed_pyramid.second);
-
-	mesh_cube.setPrimitive(cube.primitive())
-		.setCount(cube.indexCount())
-		.addVertexBuffer(std::move(vertices_cube), 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-		.setIndexBuffer(std::move(indices_cube), 0, compressed_cube.second);
+	mesh_sphere=MeshTools::compile(sphere);
+	mesh_cube=MeshTools::compile(cube);
+	mesh_pyramid=MeshTools::compile(pyramid);
 	/*
 	camera = new Camera(windowSize());*/
 	_transformation =
@@ -140,7 +113,9 @@ class lab4 : public Platform::Application {
 		.setAmbientColor({0.1, 0.1, 0.1})
 		.setTransformationMatrix(_transformation)
 		.setNormalMatrix(_transformation.normalMatrix())
-		.setProjectionMatrix(_projection);
+		.setProjectionMatrix(_projection).
+		bindDiffuseTexture()
+;
 	currentLightPosition = currentLightPosition + lightMovementSpeed;
 
 	if (currentLightPosition >= (int)lightCoords.size()) {
@@ -164,6 +139,7 @@ class lab4 : public Platform::Application {
   Lights lights;
   Matrix4 _transformation;
   Matrix4 _projection;
+  Magnum::GL::Texture2D texture;
   bool shouldBindTexture = false;
   int lightMovementSpeed = {1};
   unsigned int selectedTask{0};
