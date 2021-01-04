@@ -17,11 +17,15 @@ include_directories(Libs/magnum/src)
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 add_subdirectory(Libs/corrade EXCLUDE_FROM_ALL)
 # Add Magnum as a subproject, enable GLFWApplication
+set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+set(WITH_PNGIMPORTER ON CACHE BOOL "" FORCE)
 set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
 set(WITH_SDL2APPLICATION OFF CACHE BOOL "" FORCE)
 find_package(Corrade REQUIRED)
 add_subdirectory(Libs/magnum EXCLUDE_FROM_ALL)
-find_package(Magnum REQUIRED GL Shaders GlfwApplication Primitives Trade)
+
+find_package(Magnum REQUIRED GL Shaders GlfwApplication Primitives Trade AnyImageImporter)
+
 
 add_executable(${PROJECT_NAME} Labs/lab4.cpp vertex.hpp mesh.hpp lights.hpp camera.hpp texture.hpp) # change lab here
 
@@ -32,3 +36,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Magnum::Primitives
         Magnum::Trade
         Magnum::Magnum)
+add_dependencies(${PROJECT_NAME} Magnum::AnyImageImporter)

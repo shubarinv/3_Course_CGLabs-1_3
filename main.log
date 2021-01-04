@@ -1,0 +1,49 @@
+arguments: /Users/vhundef/CLionProjects/cgLabsRefurbished/cgLabs
+Current dir: /Users/vhundef/CLionProjects/cgLabsRefurbished
+File verbosity level: 9
+date       time         ( uptime  ) [ thread name/id ]                   file:line     v| 
+2020-12-23 16:23:36.113 (   0.000s) [main thread     ]             loguru.cpp:810   INFO| Logging to 'main.log', mode: 'w', verbosity: 9
+2020-12-23 16:23:36.158 (   0.046s) [main thread     ]             window.hpp:29    INFO| GLFW init - OK
+2020-12-23 16:23:36.158 (   0.046s) [main thread     ]             window.hpp:37    INFO| System: MacOS
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             window.hpp:50    INFO| Status: Using OpenGL v4.1 ATI-4.2.13
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             window.hpp:51    INFO| Renderer: AMD Radeon RX 5700 XT OpenGL Engine
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             window.hpp:56    INFO| Number of textures that can be accessed by the fragment shader: 16
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             window.hpp:57    INFO| Total number of textures that can be used 80
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             window.hpp:59    INFO| Init DONE!
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]        application.hpp:25    INFO| } 0.107 s: Libs init
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             shader.hpp:33    INFO| { Shader init
+2020-12-23 16:23:36.219 (   0.107s) [main thread     ]             shader.hpp:109   INFO| .   Parsing shader at: playground/lighting.glsl
+2020-12-23 16:23:36.228 (   0.116s) [main thread     ]             shader.hpp:136   INFO| .   Shader parsed successfully
+2020-12-23 16:23:36.228 (   0.116s) [main thread     ]             shader.hpp:147   INFO| .   Trying to compile VertexShader 
+2020-12-23 16:23:36.230 (   0.118s) [main thread     ]             shader.hpp:168   INFO| .   shader compiled successfully
+2020-12-23 16:23:36.230 (   0.118s) [main thread     ]             shader.hpp:147   INFO| .   Trying to compile FragmentShader 
+2020-12-23 16:23:36.230 (   0.118s) [main thread     ]             shader.hpp:168   INFO| .   shader compiled successfully
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:37    INFO| .   Created shader with id: 1
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:33    INFO| } 0.012 s: Shader init
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:33    INFO| { Shader init
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:109   INFO| .   Parsing shader at: resources/shaders/basic_w_layout.glsl
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:136   INFO| .   Shader parsed successfully
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:147   INFO| .   Trying to compile VertexShader 
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:168   INFO| .   shader compiled successfully
+2020-12-23 16:23:36.231 (   0.119s) [main thread     ]             shader.hpp:147   INFO| .   Trying to compile FragmentShader 
+2020-12-23 16:23:36.232 (   0.119s) [main thread     ]             shader.hpp:168   INFO| .   shader compiled successfully
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]             shader.hpp:37    INFO| .   Created shader with id: 4
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]             shader.hpp:33    INFO| } 0.001 s: Shader init
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]       color_buffer.hpp:26    INFO| ColorBuffer created rendererID: 1
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]      vertex_buffer.hpp:47    INFO| VertexBuffer created rendererID: 2
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]       index_buffer.hpp:34    INFO| IndexBuffer created rendererID: 3
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]       vertex_array.hpp:18    INFO| VertexArray created rendererID: 1
+2020-12-23 16:23:36.232 (   0.120s) [main thread     ]       color_buffer.hpp:38    INFO| ColorBuffer created rendererID: 4
+2020-12-23 16:23:43.865 (   7.753s) [main thread     ]        application.hpp:75    INFO| Calling registered callback
+2020-12-23 16:23:43.867 (   7.755s) [main thread     ]             window.hpp:66    INFO| GLFW window destroyed
+2020-12-23 16:23:43.867 (   7.755s) [main thread     ]             window.hpp:67    INFO| Window(0x7fe01ec10380) destroyed
+2020-12-23 16:23:43.867 (   7.755s) [main thread     ]               lab4.cpp:31    INFO| Quiting...
+2020-12-23 16:23:43.869 (   7.757s) [main thread     ]             object.hpp:233   INFO| { Object destruction
+2020-12-23 16:23:43.869 (   7.757s) [main thread     ]       color_buffer.hpp:43    INFO| .   ColorBuffer destroyed rendererID: 1
+2020-12-23 16:23:43.869 (   7.757s) [main thread     ]      vertex_buffer.hpp:59    INFO| .   VertexBuffer destroyed rendererID: 2
+2020-12-23 16:23:43.869 (   7.757s) [main thread     ]       vertex_array.hpp:22    INFO| .   VertexArray destroyed rendererID: 1
+2020-12-23 16:23:43.870 (   7.757s) [main thread     ]             object.hpp:233   INFO| } 0.000 s: Object destruction
+2020-12-23 16:23:43.870 (   7.757s) [main thread     ]             shader.hpp:41    INFO| destroyed shader with id: 4
+2020-12-23 16:23:43.870 (   7.757s) [main thread     ]             shader.hpp:41    INFO| destroyed shader with id: 1
+2020-12-23 16:23:43.870 (   7.757s) [main thread     ]        application.hpp:68    INFO| Application destroyed
+2020-12-23 16:23:43.870 (   7.757s) [main thread     ]             loguru.cpp:509   INFO| atexit
