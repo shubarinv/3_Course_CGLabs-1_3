@@ -28,14 +28,13 @@ class Window {
 	}
 	LOG_S(INFO) << "GLFW init - OK";
 
-	if (isMac()) {
 	  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);// Highest available version for macOS
 	  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);// Highest available version for macOS
 
 	  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	  LOG_S(INFO) << "System: MacOS";
-	}
+	  LOG_S(INFO) << "System: ";
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	window = glfwCreateWindow(size.x, size.y, "UNSET", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
@@ -65,6 +64,20 @@ class Window {
 	glfwDestroyWindow(window);
 	LOG_S(INFO) << "GLFW window destroyed";
 	LOG_S(INFO) << "Window(" << this << ") destroyed";
+  }
+  [[maybe_unused]] void updateFpsCounter() {
+	static double previous_seconds = glfwGetTime();
+	static int frame_count;
+	double current_seconds = glfwGetTime();
+	double elapsed_seconds = current_seconds - previous_seconds;
+	if (elapsed_seconds > 0.25) {
+	  previous_seconds = current_seconds;
+	  double fps = (double)frame_count / elapsed_seconds;
+	  std::string tmp = "@ fps: " + std::to_string((int)round(fps));
+	  glfwSetWindowTitle(window, tmp.c_str());
+	  frame_count = 0;
+	}
+	frame_count++;
   }
 };
 

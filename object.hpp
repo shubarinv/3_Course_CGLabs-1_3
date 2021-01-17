@@ -156,7 +156,7 @@ class Object {
   /**
    * @brief initializes object with data that have been passed to it previously.
    */
-  [[maybe_unused]] void init(bool bGenerateNormals = true) {
+  [[maybe_unused]] void init(bool bGenerateNormals = false) {
 	if (vertexBuffer == nullptr) {
 	  throw std::runtime_error("Object init failed");
 	}

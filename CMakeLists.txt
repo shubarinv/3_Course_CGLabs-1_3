@@ -18,7 +18,7 @@ find_package(OpenGL REQUIRED)
 
 if (WIN32)
     find_package(glm REQUIRED)
-    find_package(GLFW3 3.3 REQUIRED)
+    find_package(GLFW3 REQUIRED)
 endif ()
 if (APPLE)
     find_package(GLM REQUIRED)
@@ -26,13 +26,13 @@ if (APPLE)
 endif ()
 
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS})
-set(EXEC_LIBS Libs/glad/src/glad.c Libs/lodepng.hpp Libs/lodepng.cpp) #Add paths to libs that are used in project
+set(EXEC_LIBS Libs/glad/src/glad.c Libs/lodepng.hpp Libs/lodepng.cpp ) #Add paths to libs that are used in project
 set(EXEC_BASE renderer.hpp Buffers/vertex_buffer.hpp Buffers/index_buffer.hpp #Add paths to all files that are required by project
         Buffers/vertex_array.hpp
         Buffers/vertex_buffer_layout.hpp shader.hpp vertex.hpp
         functions.hpp window.hpp Buffers/color_buffer.hpp Buffers/buffer.hpp object.hpp Shapes/cone.hpp Shapes/cylinder.hpp
         texture.hpp c_map_texture.hpp camera.hpp light.hpp)
-add_executable(${PROJECT_NAME} ${EXEC_LIBS} ${EXEC_BASE} labs/lab2.cpp) # change lab here
+add_executable(${PROJECT_NAME} ${EXEC_LIBS} ${EXEC_BASE} labs/lab3.cpp) # change lab here
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw3 ${GLFW_LIBRARIES} ${GLM_LIBRARIES})

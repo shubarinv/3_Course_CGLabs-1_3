@@ -1,9 +1,7 @@
-//
-// Created by Vladimir Shubarin on 20.10.2020.
-//
+
 #define GL_SILENCE_DEPRECATION
 
-#include <cmath>
+//#include <cmath>
 
 #include "../Buffers/color_buffer.hpp"
 #include "../Buffers/index_buffer.hpp"
@@ -82,22 +80,22 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Object objHyperboloid;///< объект используемый в 4-7 заданиях
   Object objCube;       /// 8 задание
 
-  Cone cone3({0, 0.6, 0}, 0.3, 0.3, 4, {.5, 0.9, 0.5});         ///< верхушка елки
-  Cone cone2({0, 0.3, 0}, 0.4, 0.5, 4, {.4, 0.9, 0.4});         ///< часть елки
-  Cone cone1({0, -0.2, 0}, 0.55, 1, 4, {.3, 0.9, 0.3});         ///< часть елки
-  Cone cone0({0, -0.6, 0}, 0.7, 1, 4, {.2, 0.9, 0.2});          ///< нижняя часть елки
-  Cylinder trunk({0, -0.9, 0}, 0.2, 1.19, 4, {.37, 0.20, 0.21});///< ствол елки
+  //Cone cone3({0, 0.6, 0}, 0.3, 0.3, 4, {.49, 0.8, 0.5});         ///< верхушка елки
+  Cone cone2({0, 0.3, 0}, 0.4, 0.5, 12, {.7, 0.9, 0.7});         ///< часть елки
+  Cone cone1({0, -0.2, 0}, 0.55, 1, 12, {.6, 0.8, 0.6});         ///< часть елки
+  Cone cone0({0, -0.6, 0}, 0.7, 1, 12, {.4, 0.8, 0.4});          ///< нижняя часть елки
+  Cylinder trunk({0, -0.9, 0}, 0.2, 1.19, 12, {.37, 0.20, 0.21});///< ствол елки
 
   objGeneral.setVertexBuffer({
 	  /// кординаты для объекта из 1-3 заданий
-	  Vertex({0.0f, 0.84853f, 0}, {.81, 0.33, 0.81}),
-	  Vertex({-0.6f, 0.6f, 0}, {.70, 0.20, 0.2}),
-	  Vertex({-0.84853f, 0, 0}, {.1, 0.4, 0.2}),
-	  Vertex({-0.6f, -0.6f, 0}, {.3, 0.7, 0.9}),
-	  Vertex({0.f, -0.84853f, 0}, {.0, 0.3, 0.1}),
-	  Vertex({0.6f, -0.6f, 0}, {.8, 0.5, 0.8}),
-	  Vertex({0.84853f, 0.0f, 0}, {.7, 0.4, 0.5}),
-	  Vertex({0.6f, 0.6f, 0}, {.1, 0.5, 0.21}),
+	  Vertex({0.0f, 0.84853f, 0}, {1, 0.0, 0.0}),
+	  Vertex({-0.6f, 0.6f, 0}, {1, 1, 0.0}),
+	  Vertex({-0.84853f, 0, 0}, {0, 1, 0}),
+	  Vertex({-0.6f, -0.6f, 0}, {.0, 1, 1}),
+	  Vertex({0.f, -0.84853f, 0}, {.0, 0.0, 1}),
+	  Vertex({0.6f, -0.6f, 0}, {1, 0, 1}),
+	  Vertex({0.84853f, 0.0f, 0}, {1, 1, 0}),
+	  Vertex({0.6f, 0.6f, 0}, {0, 1, 0}),
   });
 
   std::vector<Vertex> tmp;/// координаты для точек гиперболойды
@@ -105,8 +103,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	double angle = 2 * 3.141 * i / 200;
 	double pointX = cos(angle);
 	double pointY = sin(angle);
-	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.1, 0.5, 0.21}));
-	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.6, sin(2 * 3.141 * (i + 50) / 200)}, {.81, 0.33, 0.81}));
+	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.6, 0.7, 0.2}));
+	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.6, sin(2 * 3.141 * (i + 50) / 200)}, {.8, 0.5, 0.4}));
   }
   objHyperboloid.setVertexBuffer(tmp);///<Задаем значение буферу вершин
   objHyperboloid.setIndexBuffer(tmp); ///<Задаем порядок отрисовки вершин вершин
@@ -126,7 +124,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			 {
 				 0.0,
 				 1.0,
-				 0.0,
+				 1.0,
 			 }),
 	  Vertex({
 				 1.0,
@@ -146,7 +144,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 			 {
 				 1.0,
 				 1.0,
-				 1.0,
+				 0.0,
 			 }),
 	  Vertex({
 				 -1.0,
@@ -208,8 +206,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   camera.lookAt({0, 0, 0});
 
   LOG_SCOPE_F(INFO, "Runtime");
+  double lasttime = glfwGetTime();
   while (!app.shouldClose) {
-	Renderer::clear({0.16, 0.36, 0.42, 0});///< отчисляем экран указаным цветом
+
+	app.getWindow()->updateFpsCounter();
+	Renderer::clear({0.12, 0.1, 0.21, 0});///< отчисляем экран указаным цветом
 	if (selected_optionX < 3) {
 	  camera.moveTo({0, 0, 1});
 	  camera.lookAt({0, 0, 0});
@@ -243,21 +244,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	  case 4:
 		camera.lookAt({0, 0, 0});
 		camera.moveTo({0, 0, 3});
-		camera.setModel(glm::rotate(camera.getModel(), 0.001f, {0, 0, 1}));
+		camera.setModel(glm::rotate(camera.getModel(), -0.01f, {0, 0, 1}));
 		Renderer::draw(&objHyperboloid, &lShader);
 		break;
 	  case 5:
 		uShader.bind();
 		uShader.setUniformMat4f("u_MVP", camera.getMVP());
-		uShader.setUniform4f("u_Color", {r, 0.4f, 0.7f, 1.0f});
+		uShader.setUniform4f("u_Color", {0.8, r, 0.2f, 1.0f});
 		camera.moveTo({0, 0, 1});
 		camera.lookAt({0, 0, 0});
-		camera.setModel(glm::scale(glm::mat4(1.0f), glm::vec3(r * 0.4)));
+		camera.setModel(glm::scale(glm::mat4(0.1f), glm::vec3(r * 0.2)));
 		Renderer::draw(&objHyperboloid, &uShader);
 		break;
 
 	  case 6:
-		camera.moveTo({0, 0, 3});
+		camera.moveTo({0, 2, 3});
 		camera.lookAt({0, 0, 0});
 		camera.setModel(glm::mat4(1.0f));// Индивидуально для каждой модели
 		Renderer::draw(&objCube, &lShader);
@@ -271,7 +272,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 		Renderer::draw(&cone0, &lShader);
 		Renderer::draw(&cone1, &lShader);
 		Renderer::draw(&cone2, &lShader);
-		Renderer::draw(&cone3, &lShader);
+		//Renderer::draw(&cone3, &lShader);
 		Renderer::draw(&trunk, &lShader);
 		break;
 	  default: break;
@@ -312,6 +313,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
 	/* Poll for and process events */
 	glfwPollEvents();
+	while (glfwGetTime() < lasttime + 1.0/60) {
+// TODO: Put the thread to sleep, yield, or simply do nothing
+	}
+	lasttime += 1.0/60;
   }
   LOG_S(INFO) << "Goodbye.";
   return 0;
