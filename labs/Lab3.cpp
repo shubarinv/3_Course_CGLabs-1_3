@@ -108,6 +108,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 	tmp.push_back(Vertex({pointX, 0.6, pointY}, {.1, 0.5, 0.21}));
 	tmp.push_back(Vertex({cos(2 * 3.141 * (i + 50) / 200), -0.6, sin(2 * 3.141 * (i + 50) / 200)}, {.81, 0.33, 0.81}));
   }
+
   objHyperboloid.setVertexBuffer(tmp);///<Задаем значение буферу вершин
   objHyperboloid.setIndexBuffer(tmp); ///<Задаем порядок отрисовки вершин вершин
   objCube.setVertexBuffer({
